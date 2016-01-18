@@ -1,0 +1,109 @@
+* {
+	box-sizing: border-box;
+	padding: 0px;
+	margin: 0px;
+}
+
+html {
+	height: 100%;
+	background-color: black;
+	font-size: 18px;
+	font-family: sans-serif;
+	color: #DBDBD1;
+}
+
+body {
+	min-height: 2000px;
+	width: 1200px;
+	margin: auto;
+	padding: 10px 40px 10px 40px;
+	background-color: #303030;
+}
+
+h1 {
+	text-align: center;
+	margin-bottom: 48px;
+	font-size: 96px;
+	color: #8DB553;
+}
+
+h2 {
+	margin-top: 64px;
+	margin-bottom: 24px;
+	font-size: 48px;
+	color: #8DB553;
+}
+
+h3 {
+	margin-top: 64px;
+	margin-bottom: 15px;
+	font-size: 32px;
+	color: #8DB553;
+}
+
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+.single-code-box {
+	border: 1px solid grey;
+	border-radius: 5px;
+	margin: 20px 0px 20px 0px;
+	padding: 5px 20px 5px 20px;
+	font-family: Monospace;
+	overflow: hidden;
+}
+
+.multi-code-box {
+	border: 1px solid grey;
+	border-radius: 5px;
+	margin: 20px 0px 20px 0px;
+	font-family: Monospace;
+	overflow: hidden;
+}
+
+.code-box-head {
+	border-bottom: 1px solid grey;
+}
+
+.code-box-button {
+	display: block;
+	float: left;
+	width: 80px;
+	height: 100%;
+	padding: 3px;
+	text-align: center;
+	background-color: #363636;
+	cursor: pointer;
+	border-right: 1px solid grey;
+}
+
+.code-box-button.pressed {
+	background-color: #414141;
+}
+
+/*.code-box-button:hover:not(.pressed) {
+	background-color: #3b3b3b;
+}*/
+
+.code-box-body {
+	padding: 5px 20px 5px 20px;
+}
+
+.code-box-script {
+
+}
+
+.code-box-script .segment:hover {
+	background-color: #414141;
+}
+
+.tab {
+	display: inline-block;
+	width: 32px;
+}

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Learn Coding</title>
+		<link rel="icon" type="image/png" href="images/favicon.png" />
+		<link rel="stylesheet" type="text/css" href="styles/style.css" />
+		<script type="text/javascript" src="scripts/jquery.js" ></script>
+		<script type="text/javascript" src="scripts/jpv.js" ></script>
+		<script type="text/javascript" src="scripts/application.js" ></script>
+	</head>
+	<body>
+		<h1>Learn Coding</h1>
+		<h2>1 Variablen</h2>
+		<h3>1.1 Variablen erstellen</h3>
+		<div>
+			Was sind Variablen?
+			Ganz einfach, eine Variable ist wie ein "Behälter" für einen Wert.
+			Das Gegenteil einer Variable ist eine Konstante.<br/>
+			(Variable == variabel/veränderbar, Konstante == konstant/unveränderbar)<br/>
+			<br/>
+			In der folgenden Code-Box sind alle Variablen <span style="color: orange;">orange</span>
+			eingefärbt und alle Konstanten <span style="color: #65B6CE;">blau</span>.
+		</div>
+		<div class="single-code-box">
+			<div class="code-box-script">
+				x = 5
+				y = 2 * x + 5
+			</div>
+		</div>
+		<div>
+			So würde eine Formel mit Variablen und Konstanten in der Mathematik aussehen.<br/>
+			Würde man die Formel in Zeile 2 ausrechnen, wäre der Wert von y 15.<br/>
+			Man könnte aber auch x = 5 durch x = 10 ersetzen, dann würde für y 25<br/>
+			rauskommen, ohne dass man die Formel selbst verändert hat.<br/>
+			<br/>
+			<br/>
+			So werden Variablen in der Mathematik definiert. Der Bezeichner der Variable,
+			dann ein "=" und dann der Wert.
+			<br/>
+			Und so macht man das in verschiedenen Programmiersprachen:
+		</div>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					String s = "Hello World!";
+					int i = 3;
+					float f = 3.5f;
+					boolean b = true;
+					Object o = new Object();
+					String[] a = new String[3];
+				</div>
+				<div class="code-box-script" data-title="c#">
+					string s = "Hello World!";
+					int i = 3;
+					float f = 3.5f;
+					bool b = true;
+					object o = new object();
+					string[] a = new string[3];
+				</div>
+				<div class="code-box-script" data-title="php">
+					$s = 'Hello World!';
+					$i = 3;
+					$f = 3.5;
+					$b = true;
+					$o = new DateTime();
+					$a = [];
+				</div>
+				<div class="code-box-script" data-title="js">
+					var s = "Hello World!";
+					var i = 3;
+					var f = 3.5;
+					var b = true;
+					var o = {};
+					var a = [];
+				</div>
+				<div class="code-box-script" data-title="ts">
+					var s: string = "Hello World!";
+					var i: number = 3;
+					var f: number = 3.5;
+					var b: boolean = true;
+					var o: {} = {};
+					var a: string[] = [];
+				</div>
+				<div class="code-box-script" data-title="sh">
+					s="Hello World!"
+					i=3
+					f=3.5
+					a=()
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local string s = "Hello World!"
+					local integer i = 3
+					local real f = 3.5
+					local boolean b = true
+					local unit o = GetTriggerUnit()
+					local string array a[3]
+				</div>
+			</div>
+		</div>
+		<div>
+			Anders als in der Mathematik kann man hier den Variablen als Wert nicht nur Zahlen zuweisen,
+			sondern auch Texte, Wahrheitswerte (Wahr/true und Unwahr/false), Objekte oder Listen.
+			<br/>
+			Bei Manchen Sprachen muss man mit "var" oder "$" erst darauf hinweisen, dass
+			man eine neue Variable definieren will, bei manchen muss man angeben welche Arten von Werten
+			denn genau in der Variable gespeichert werden dürfen
+			und bei manchen muss man beides angeben.<br/>
+			<br/>
+			Oft kann man auch Variablen erzeugen ohne einen Wert zu setzen.
+			Die Variable ist dann leer oder hat einen standard Wert.
+		</div>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					String s;
+				</div>
+				<div class="code-box-script" data-title="c#">
+					string s;
+				</div>
+				<div class="code-box-script" data-title="php">
+					$s;
+				</div>
+				<div class="code-box-script" data-title="js">
+					var s;
+				</div>
+				<div class="code-box-script" data-title="ts">
+					var s: string;
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local string s
+				</div>
+			</div>
+		</div>
+		<h3>1.2 Variablen auslesen</h3>
+		<div>
+			Wir können jetzt zwar (vielleicht) Variablen erstellen, aber noch nicht benutzen.
+			Es wäre ja sinnlos wenn wir Werte nur in den "Behältern" versenken könnten aber
+			sie nie wieder auslesen können.<br/>
+			VORSICHT: Auslesen heist nur Auslesen, nicht herausholen, die Variable selbst wird
+			hier erstmal nicht verändert.<br/>
+			<br/>
+			In den meisten Sprachen oder Entwicklungsumgebungen für Sprachen gibt es eine Art standard Ausgabe.
+			Diese werde ich im nächsten Beispiel nutzen.<br/>
+			Dabei wird der Inhalt meistens irgendwo auf dem Bildschirm ausgegeben (z.B. Konsole, Popup im Browser, ...).
+			Wie das funktioniert ist erstmal egal.
+			<br/>
+		</div>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					String s = "Hello World!";
+					System.out.println(s);
+				</div>
+				<div class="code-box-script" data-title="c#">
+					string s = "Hello World!";
+					Console.WriteLine(s);
+				</div>
+				<div class="code-box-script" data-title="php">
+					$s = 'Hello World!';
+					echo $s;
+				</div>
+				<div class="code-box-script" data-title="js">
+					var s = "Hello World!";
+					alert(s);
+				</div>
+				<div class="code-box-script" data-title="ts">
+					var s: string = "Hello World!";
+					alert(s);
+				</div>
+				<div class="code-box-script" data-title="sh">
+					s="Hello World!"
+					echo $s;
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local string s = "Hello World!"
+					call BJDebugMsg(s)
+				</div>
+			</div>
+		</div>
+		<h3>1.3 Variablen setzen</h3>
+		<div>
+			Variablen würden nicht Variablen heisen wenn man sie nur einmal setzen
+			und dann nie wieder verändern könnte.
+			Ein der Wert welcher einmal gesetzt (oder auch nicht gesetzt) wurde kann
+			wieder mit einem anderen Wert überschrieben werden.
+		</div>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					String s = "Hello World!";
+					s = "foo bar";
+				</div>
+				<div class="code-box-script" data-title="c#">
+					string s = "Hello World!";
+					s = "foo bar";
+				</div>
+				<div class="code-box-script" data-title="php">
+					$s = 'Hello World!';
+					$s = 'foo bar';
+				</div>
+				<div class="code-box-script" data-title="js">
+					var s = "Hello World!";
+					s = "foo bar";
+				</div>
+				<div class="code-box-script" data-title="ts">
+					var s: string = "Hello World!";
+					s = "foo bar";
+				</div>
+				<div class="code-box-script" data-title="sh">
+					s="Hello World!"
+					s="foo bar"
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local string s = "Hello World!"
+					set s = "foo bar"
+				</div>
+			</div>
+		</div>
+		<div>
+			Man kann auch den Wert einer Variable auslesen WÄHREND man ihn gerade überschreibt,
+			da er zu diesen Zeitpunkt noch nicht überschrieben wurde.
+			Dadurch kann man den Wert einer Variable (wenn es eine Zahl ist) um 1 erhöhen indem
+			man den Wert ausliest, 1 dazu zählt und ihn dann setzt.
+		</div>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					String s = "a";
+					s = s + "b";
+
+					int i = 3;
+					i = i + 1;
+				</div>
+				<div class="code-box-script" data-title="c#">
+					string s = "a";
+					s = s + "b";
+
+					int i = 3;
+					i = i + 1;
+				</div>
+				<div class="code-box-script" data-title="php">
+					$s = 'a';
+					$s = $s . 'b';
+
+					$i = 3;
+					$i = $i + 1;
+				</div>
+				<div class="code-box-script" data-title="js">
+					var s = "a";
+					s = s + "b";
+
+					var i = 3;
+					i = i + 1;
+				</div>
+				<div class="code-box-script" data-title="ts">
+					var s: string = "a";
+					s = s + "b";
+
+					var i: number = 3;
+					i = i + 1;
+				</div>
+				<div class="code-box-script" data-title="sh">
+					s="a"
+					s="$ab"
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local string s = "a"
+					local integer i = 3
+
+					set s = s + "b"
+					set i = i + 1
+				</div>
+			</div>
+		</div>
+		<h3>1.4 Werte umwandeln</h3>
+		<div>
+			Wir haben schon "Hello World!" ausgegeben, aber was ist wenn wir 3 ausgeben wollen?
+			3 ist nunmal eine Zahl, kein Zeichen. Sie kann aber als Zeichen dagestellt werden,
+			so wie in diesem Text hier.<br/>
+			Wenn wir also eine Zahl ausgeben wollen, müssen wir sie erst in einen text umwandeln.
+			Im nächsten Beispiel wird angenommen es gäbe eine Variable mit dem Bezeichner "i" und dem Inhalt 3,
+			und eine Variable "s" in der der Text gespeichert werden soll.
+			In den meisten Sprachen gibt es mehrere Möglichkeiten eine Zahl in einen
+			Text umzuwandeln.
+		</div>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					s = Integer.toString(i);
+					s = "" + i;
+				</div>
+				<div class="code-box-script" data-title="c#">
+					s = i.ToString();
+					s = "" + i;
+				</div>
+				<div class="code-box-script" data-title="php">
+					$s = (String)i;
+					$s = '' . i;
+				</div>
+				<div class="code-box-script" data-title="js">
+					s = i.toString();
+					s = "" + i;
+				</div>
+				<div class="code-box-script" data-title="ts">
+					s = i.toString();
+					s = "" + i;
+				</div>
+				<div class="code-box-script" data-title="jass">
+					set s = I2S(i)
+				</div>
+			</div>
+		</div>
+		<h2>Fallunterscheidungen</h2>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					String result;
+					int i = 5;
+					if (i < 10)
+					{
+						result = "less";
+					}
+					else
+					{
+						result = "not less";
+					}
+					System.out.println(i + " is " + result + " 10");
+				</div>
+				<div class="code-box-script" data-title="c#">
+					string result;
+					int i = 5;
+					if (i < 10)
+					{
+						result = "less";
+					}
+					else
+					{
+						result = "not less";
+					}
+					Console.WriteLine(i + " is " + result + " 10");
+				</div>
+				<div class="code-box-script" data-title="php">
+					$result;
+					$i = 5;
+					if ($i < 10)
+					{
+						$result = 'less';
+					}
+					else
+					{
+						$result = 'not less';
+					}
+					echo $i . ' is ' . result . ' 10';
+				</div>
+				<div class="code-box-script" data-title="js">
+					var result;
+					var i = 5;
+					if (i < 10)
+					{
+						result = "less";
+					}
+					else
+					{
+						result = "not less";
+					}
+					alert(i . " is " + result . " 10");
+				</div>
+				<div class="code-box-script" data-title="ts">
+					var result: string;
+					var i: number = 5;
+					if (i < 10)
+					{
+						result = "less";
+					}
+					else
+					{
+						result = "not less";
+					}
+					alert(i . " is " + result . " 10");
+				</div>
+				<div class="code-box-script" data-title="sh">
+					i=5
+					if [ i -lt 10 ]
+					then
+						result="less"
+					else
+						result="not less"
+					fi
+					echo "$i is $result 10"
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local string result
+					local integer i = 5
+					if (i < 10) then
+						set result = "less"
+					else
+						set result = "not less"
+					endif
+					call BJDebug(result)
+				</div>
+			</div>
+		</div>
+		<h2>For-Schleifen</h2>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					for (int i = 0; i < 10; i++)
+					{
+						System.out.println(i);
+					}
+				</div>
+				<div class="code-box-script" data-title="c#">
+					for (int i = 0; i < 10; i++)
+					{
+						Console.WriteLine(i);
+					}
+				</div>
+				<div class="code-box-script" data-title="php">
+					for ($i = 0; $i < 10; $i++)
+					{
+						echo $i;
+					}
+				</div>
+				<div class="code-box-script" data-title="js">
+					for (var i = 0; i < 10; i++)
+					{
+						alert(i);
+					}
+				</div>
+				<div class="code-box-script" data-title="ts">
+					for (var i = 0; i < 10; i++)
+					{
+						alert(i);
+					}
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local integer i = 0
+					loop
+						exitwhen (i == 10)
+						call BJDebug(I2S(i))
+						set i = i + 1
+					endloop
+				</div>
+			</div>
+		</div>
+		<h2>Foreach-Schleifen</h2>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					String[] fruits = { "apple", "banana", "orange" };
+					for (String fruit : fruits)
+					{
+						System.out.println(fruit);
+					}
+				</div>
+				<div class="code-box-script" data-title="c#">
+					string[] fruits = new string[] { "apple", "banana", "orange" };
+					foreach (string fruit in fruits)
+					{
+						Console.WriteLine(fruit);
+					}
+				</div>
+				<div class="code-box-script" data-title="php">
+					$fruits = [ "apple", "banana", "orange" ];
+					foreach ($fruits as $fruit)
+					{
+						echo $fruit;
+					}
+				</div>
+				<div class="code-box-script" data-title="js">
+					var fruits = [ "apple", "banana", "orange" ];
+					for (var i = 0; i < fruits.length; i++)
+					{
+						alert(fruits[i]);
+					}
+				</div>
+				<div class="code-box-script" data-title="ts">
+					var fruits = [ "apple", "banana", "orange" ];
+					for (var fruit of fruits)
+					{
+						alert(fruit);
+					}
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local integer fruitCount = 3
+					local string array fruits[fruitCount]
+					local integer i = 0
+					set fruits[0] = "apple"
+					set fruits[1] = "banana"
+					set fruits[2] = "orange"
+					loop
+						exitwhen (i == fruitCount)
+						call BJDebug(fruits[i])
+						set i = i + 1
+					endloop
+				</div>
+			</div>
+		</div>
+		<h2>Funktionen</h2>
+		<h3>Funktionen deklarieren</h3>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="php">
+					function square($value)
+					{
+						return $value * $value;
+					}
+				</div>
+				<div class="code-box-script" data-title="js">
+					function square(value)
+					{
+						return value * value;
+					}
+				</div>
+				<div class="code-box-script" data-title="ts">
+					function square(value: number): number
+					{
+						return value * value;
+					}
+				</div>
+				<div class="code-box-script" data-title="jass">
+					function square takes real value returns real
+						return value * value
+					endfunction
+				</div>
+			</div>
+		</div>
+		<h3>Funktionen aufrufen</h3>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="php">
+					$value = 3;
+					$squaredValue = square($value);
+				</div>
+				<div class="code-box-script" data-title="js">
+					var value = 3;
+					var squaredValue = square(value);
+				</div>
+				<div class="code-box-script" data-title="ts">
+					var value: number = 3;
+					var squaredValue = square(value);
+				</div>
+				<div class="code-box-script" data-title="jass">
+					local real value = 3
+					local real squaredValue = square(value)
+				</div>
+			</div>
+		</div>
+		<h2>Klassen</h2>
+		<h3>Klassen deklarieren</h3>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					public class Fruit
+					{
+
+					}
+				</div>
+				<div class="code-box-script" data-title="c#">
+					public class Fruit
+					{
+
+					}
+				</div>
+				<div class="code-box-script" data-title="php">
+					class Fruit
+					{
+
+					}
+				</div>
+				<div class="code-box-script" data-title="ts">
+					class Fruit
+					{
+
+					}
+				</div>
+				<div class="code-box-script" data-title="jass">
+					struct Fruit
+					{
+
+					}
+				</div>
+			</div>
+		</div>
+		<h3>Felder deklarieren</h3>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					public class Fruit
+					{
+						public String name;
+					}
+				</div>
+				<div class="code-box-script" data-title="c#">
+					public class Fruit
+					{
+						public string Name;
+					}
+				</div>
+				<div class="code-box-script" data-title="php">
+					class Fruit
+					{
+						public $name;
+					}
+				</div>
+				<div class="code-box-script" data-title="ts">
+					class Fruit
+					{
+						public name: string;
+					}
+				</div>
+				<div class="code-box-script" data-title="jass">
+					struct Fruit
+					{
+						public string name
+					}
+				</div>
+			</div>
+		</div>
+		<h3>Konstruktoren deklarieren</h3>
+		<div class="multi-code-box">
+			<div class="code-box-head clearfix">
+			</div>
+			<div class="code-box-body">
+				<div class="code-box-script" data-title="java">
+					public class Fruit
+					{
+						public String name;
+
+						public Fruit(String name)
+						{
+							this.name = name;
+						}
+					}
+				</div>
+				<div class="code-box-script" data-title="c#">
+					public class Fruit
+					{
+						public string Name;
+
+						public Fruit(string name)
+						{
+							this.Name = name;
+						}
+					}
+				</div>
+				<div class="code-box-script" data-title="php">
+					class Fruit
+					{
+						public $name;
+
+						public function __construct($name)
+						{
+							$this->name = $name;
+						}
+					}
+				</div>
+				<div class="code-box-script" data-title="ts">
+					class Fruit
+					{
+						public name: string;
+
+						constructor(name: string)
+						{
+							this.name = name;
+						}
+					}
+				</div>
+				<div class="code-box-script" data-title="jass">
+					struct Fruit
+					{
+						public string name
+
+						public static method create takes string name returns Fruit
+					        local Fruit fruit = Fruit.allocate()
+					        set fruit.name = name
+					        return fruit
+					    endmethod
+					}
+				</div>
+			</div>
+		</div>
+		<!-- Quick and dirty javascript here! -->
+		<script type="text/javascript">
+			var app = new Application.Application();
+			app.run();
+		</script>
+	</body>
+</html>
