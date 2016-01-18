@@ -1,4 +1,4 @@
-module Application.Language.Factory
+module Application_Old.Language.Factory
 {
 	export class Keywords
 	{
