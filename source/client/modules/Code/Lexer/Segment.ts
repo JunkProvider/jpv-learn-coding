@@ -29,14 +29,26 @@ module Code.Lexer
 			}
 		}
 		
-		getNextRelevantSibling()
+		getNextRelevantText()
+		{
+			const segment = this.getNextRelevant();	
+			return segment != null ? segment.text : "";
+		}
+		
+		getNextRelevant()
 		{
 			return this.getNextMatchingSibling(
 				(segment) => segment.lexerHint != LexerHint.WHITESPACE && segment.lexerHint != LexerHint.COMMENT
 			);	
 		}
 		
-		getPrevRelevantSibling()
+		getPrevRelevantText()
+		{
+			const segment = this.getPrevRelevant();	
+			return segment != null ? segment.text : "";
+		}
+		
+		getPrevRelevant()
 		{
 			return this.getPrevMatchingSibling(
 				(segment) => segment.lexerHint != LexerHint.WHITESPACE && segment.lexerHint != LexerHint.COMMENT

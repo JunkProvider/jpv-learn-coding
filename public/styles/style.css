@@ -9,7 +9,8 @@ html {
 	background-color: black;
 	font-size: 18px;
 	font-family: sans-serif;
-	color: #DBDBD1;
+	color: #D3d3D3;
+	/*color: #DBDBD1;*/
 }
 
 body {
@@ -54,7 +55,7 @@ h3 {
 	border: 1px solid grey;
 	border-radius: 5px;
 	margin: 20px 0px 20px 0px;
-	padding: 5px 20px 5px 20px;
+	padding: 5px 10px 5px 10px;
 	font-family: Monospace;
 	overflow: hidden;
 }
@@ -92,18 +93,67 @@ h3 {
 }*/
 
 .code-box-body {
-	padding: 5px 20px 5px 20px;
+	padding: 5px 10px 5px 10px;
 }
 
-.code-box-script {
+.code-container {
 
 }
 
-.code-box-script .segment:hover {
+.code-container-left {
+	float: left;
+	/*padding: 0px 5px 0px 0px;
+	margin: 0px 5px 0px 0px;
+	border-right: 1px solid grey;*/
+}
+
+.code-container-right {
+	float: left;
+}
+
+.code-container .segment:hover {
 	background-color: #414141;
 }
 
 .tab {
 	display: inline-block;
 	width: 32px;
+}
+
+.menu
+{
+	position: relative;
+	font-size: 20px;
+	font-weight: bold;
+	color: #8DB553;
+}
+
+.menu-item
+{
+	width: 250px;
+	border: 1px solid grey;
+}
+
+.menu > .menu-item
+{
+	position: relative;
+	float: left;
+}
+
+.sub-menu
+{
+	display: none;
+	position: absolute;
+	left: 0px;
+	top: 100%;
+}
+
+.menu-item:hover .sub-menu
+{
+	display: block;
+}
+
+.sub-menu > .menu-item
+{
+	
 }

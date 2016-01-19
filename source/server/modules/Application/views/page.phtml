@@ -11,6 +11,36 @@
 	</head>
 	<body>
 		<h1>Learn Coding</h1>
+		<div class="menu clearfix">
+			<div class="menu-item">
+				Einführung
+				<div class="sub-menu">
+					<div class="menu-item">
+						Variablen
+					</div>
+					<div class="menu-item">
+						Fallunterscheidungen
+					</div>
+					<div class="menu-item">
+						Schleifen
+					</div>
+				</div>
+			</div>
+			<div class="menu-item">
+				Objektorientierung
+				<div class="sub-menu">
+					<div class="menu-item">
+						Klassen und Felder
+					</div>
+					<div class="menu-item">
+						Konstruktoren
+					</div>
+					<div class="menu-item">
+						Methoden
+					</div>
+				</div>
+			</div>
+		</div>
 		<h2>1 Variablen</h2>
 		<h3>1.1 Variablen erstellen</h3>
 		<div>
@@ -23,7 +53,7 @@
 			eingefärbt und alle Konstanten <span style="color: #65B6CE;">blau</span>.
 		</div>
 		<div class="single-code-box">
-			<div class="code-box-script">
+			<div class="code-container" data-language="java">
 				x = 5
 				y = 2 * x + 5
 			</div>
@@ -44,7 +74,7 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					String s = "Hello World!";
 					int i = 3;
 					float f = 3.5f;
@@ -52,7 +82,7 @@
 					Object o = new Object();
 					String[] a = new String[3];
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					string s = "Hello World!";
 					int i = 3;
 					float f = 3.5f;
@@ -60,7 +90,7 @@
 					object o = new object();
 					string[] a = new string[3];
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$s = 'Hello World!';
 					$i = 3;
 					$f = 3.5;
@@ -68,7 +98,7 @@
 					$o = new DateTime();
 					$a = [];
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					var s = "Hello World!";
 					var i = 3;
 					var f = 3.5;
@@ -76,7 +106,7 @@
 					var o = {};
 					var a = [];
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					var s: string = "Hello World!";
 					var i: number = 3;
 					var f: number = 3.5;
@@ -84,13 +114,13 @@
 					var o: {} = {};
 					var a: string[] = [];
 				</div>
-				<div class="code-box-script" data-title="sh">
+				<div class="code-container" data-language="sh">
 					s="Hello World!"
 					i=3
 					f=3.5
 					a=()
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local string s = "Hello World!"
 					local integer i = 3
 					local real f = 3.5
@@ -116,22 +146,22 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					String s;
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					string s;
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$s;
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					var s;
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					var s: string;
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local string s
 				</div>
 			</div>
@@ -154,31 +184,31 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					String s = "Hello World!";
 					System.out.println(s);
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					string s = "Hello World!";
 					Console.WriteLine(s);
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$s = 'Hello World!';
 					echo $s;
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					var s = "Hello World!";
 					alert(s);
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					var s: string = "Hello World!";
 					alert(s);
 				</div>
-				<div class="code-box-script" data-title="sh">
+				<div class="code-container" data-language="sh">
 					s="Hello World!"
 					echo $s;
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local string s = "Hello World!"
 					call BJDebugMsg(s)
 				</div>
@@ -195,31 +225,31 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					String s = "Hello World!";
 					s = "foo bar";
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					string s = "Hello World!";
 					s = "foo bar";
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$s = 'Hello World!';
 					$s = 'foo bar';
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					var s = "Hello World!";
 					s = "foo bar";
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					var s: string = "Hello World!";
 					s = "foo bar";
 				</div>
-				<div class="code-box-script" data-title="sh">
+				<div class="code-container" data-language="sh">
 					s="Hello World!"
 					s="foo bar"
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local string s = "Hello World!"
 					set s = "foo bar"
 				</div>
@@ -235,46 +265,46 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					String s = "a";
 					s = s + "b";
 
 					int i = 3;
 					i = i + 1;
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					string s = "a";
 					s = s + "b";
 
 					int i = 3;
 					i = i + 1;
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$s = 'a';
 					$s = $s . 'b';
 
 					$i = 3;
 					$i = $i + 1;
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					var s = "a";
 					s = s + "b";
 
 					var i = 3;
 					i = i + 1;
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					var s: string = "a";
 					s = s + "b";
 
 					var i: number = 3;
 					i = i + 1;
 				</div>
-				<div class="code-box-script" data-title="sh">
+				<div class="code-container" data-language="sh">
 					s="a"
 					s="$ab"
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local string s = "a"
 					local integer i = 3
 
@@ -298,27 +328,27 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					s = Integer.toString(i);
 					s = "" + i;
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					s = i.ToString();
 					s = "" + i;
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$s = (String)i;
 					$s = '' . i;
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					s = i.toString();
 					s = "" + i;
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					s = i.toString();
 					s = "" + i;
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					set s = I2S(i)
 				</div>
 			</div>
@@ -328,7 +358,7 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					String result;
 					int i = 5;
 					if (i < 10)
@@ -341,7 +371,7 @@
 					}
 					System.out.println(i + " is " + result + " 10");
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					string result;
 					int i = 5;
 					if (i < 10)
@@ -354,7 +384,7 @@
 					}
 					Console.WriteLine(i + " is " + result + " 10");
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$result;
 					$i = 5;
 					if ($i < 10)
@@ -367,7 +397,7 @@
 					}
 					echo $i . ' is ' . result . ' 10';
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					var result;
 					var i = 5;
 					if (i < 10)
@@ -380,7 +410,7 @@
 					}
 					alert(i . " is " + result . " 10");
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					var result: string;
 					var i: number = 5;
 					if (i < 10)
@@ -393,7 +423,7 @@
 					}
 					alert(i . " is " + result . " 10");
 				</div>
-				<div class="code-box-script" data-title="sh">
+				<div class="code-container" data-language="sh">
 					i=5
 					if [ i -lt 10 ]
 					then
@@ -403,7 +433,7 @@
 					fi
 					echo "$i is $result 10"
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local string result
 					local integer i = 5
 					if (i < 10) then
@@ -420,37 +450,37 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					for (int i = 0; i < 10; i++)
 					{
 						System.out.println(i);
 					}
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					for (int i = 0; i < 10; i++)
 					{
 						Console.WriteLine(i);
 					}
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					for ($i = 0; $i < 10; $i++)
 					{
 						echo $i;
 					}
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					for (var i = 0; i < 10; i++)
 					{
 						alert(i);
 					}
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					for (var i = 0; i < 10; i++)
 					{
 						alert(i);
 					}
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local integer i = 0
 					loop
 						exitwhen (i == 10)
@@ -465,42 +495,42 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					String[] fruits = { "apple", "banana", "orange" };
 					for (String fruit : fruits)
 					{
 						System.out.println(fruit);
 					}
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					string[] fruits = new string[] { "apple", "banana", "orange" };
 					foreach (string fruit in fruits)
 					{
 						Console.WriteLine(fruit);
 					}
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$fruits = [ "apple", "banana", "orange" ];
 					foreach ($fruits as $fruit)
 					{
 						echo $fruit;
 					}
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					var fruits = [ "apple", "banana", "orange" ];
 					for (var i = 0; i < fruits.length; i++)
 					{
 						alert(fruits[i]);
 					}
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					var fruits = [ "apple", "banana", "orange" ];
 					for (var fruit of fruits)
 					{
 						alert(fruit);
 					}
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local integer fruitCount = 3
 					local string array fruits[fruitCount]
 					local integer i = 0
@@ -521,25 +551,25 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					function square($value)
 					{
 						return $value * $value;
 					}
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					function square(value)
 					{
 						return value * value;
 					}
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					function square(value: number): number
 					{
 						return value * value;
 					}
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					function square takes real value returns real
 						return value * value
 					endfunction
@@ -551,19 +581,19 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					$value = 3;
 					$squaredValue = square($value);
 				</div>
-				<div class="code-box-script" data-title="js">
+				<div class="code-container" data-language="js">
 					var value = 3;
 					var squaredValue = square(value);
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					var value: number = 3;
 					var squaredValue = square(value);
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					local real value = 3
 					local real squaredValue = square(value)
 				</div>
@@ -575,31 +605,31 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					public class Fruit
 					{
 
 					}
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					public class Fruit
 					{
 
 					}
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					class Fruit
 					{
 
 					}
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					class Fruit
 					{
 
 					}
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					struct Fruit
 					{
 
@@ -612,31 +642,31 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					public class Fruit
 					{
 						public String name;
 					}
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					public class Fruit
 					{
 						public string Name;
 					}
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					class Fruit
 					{
 						public $name;
 					}
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					class Fruit
 					{
 						public name: string;
 					}
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					struct Fruit
 					{
 						public string name
@@ -649,7 +679,7 @@
 			<div class="code-box-head clearfix">
 			</div>
 			<div class="code-box-body">
-				<div class="code-box-script" data-title="java">
+				<div class="code-container" data-language="java">
 					public class Fruit
 					{
 						public String name;
@@ -660,7 +690,7 @@
 						}
 					}
 				</div>
-				<div class="code-box-script" data-title="c#">
+				<div class="code-container" data-language="c#">
 					public class Fruit
 					{
 						public string Name;
@@ -671,7 +701,7 @@
 						}
 					}
 				</div>
-				<div class="code-box-script" data-title="php">
+				<div class="code-container" data-language="php">
 					class Fruit
 					{
 						public $name;
@@ -682,7 +712,7 @@
 						}
 					}
 				</div>
-				<div class="code-box-script" data-title="ts">
+				<div class="code-container" data-language="ts">
 					class Fruit
 					{
 						public name: string;
@@ -693,7 +723,7 @@
 						}
 					}
 				</div>
-				<div class="code-box-script" data-title="jass">
+				<div class="code-container" data-language="jass">
 					struct Fruit
 					{
 						public string name

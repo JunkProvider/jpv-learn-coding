@@ -17,8 +17,8 @@ module Application
 			const _this = this;
 			
 			$(".single-code-box").each(function() {
-				const $codeContainer = $(this).find(".code-box-script");
-				const languageName = <string><any>$codeContainer.data("title");
+				const $codeContainer = $(this).find(".code-container");
+				const languageName = <string><any>$codeContainer.data("language");
 				const language = _this.languageService.getLanguageByName(languageName);
 				new Code.View.CodeContainer($codeContainer, language);
 			});

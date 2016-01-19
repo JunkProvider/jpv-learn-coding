@@ -4,7 +4,7 @@
 
 module Code.Interpreter
 {
-	export class JavaInterpreter implements IInterpreter
+	export class TypescriptInterpreter implements IInterpreter
 	{
 		private keywords: JPV.Collection.Map<string>;
 		private operators: JPV.Collection.Map<string>;
@@ -65,7 +65,7 @@ module Code.Interpreter
 			const nextText = next != null ? next.text : "";
 			const nextHint = next != null ? next.lexerHint : Lexer.LexerHint.NONE;
 			
-			if (prevText == "new")
+			if (prevText == "new" || prevText == ':')
 				return InterpreterHint.TYPE;
 
 			if (nextHint == Lexer.LexerHint.WORD)

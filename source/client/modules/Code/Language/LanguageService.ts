@@ -1,4 +1,10 @@
 /// <reference path="../Lexer/Lexer" />
+/// <reference path="../Interpreter/JavaInterpreter" />
+/// <reference path="../Interpreter/TypescriptInterpreter" />
+/// <reference path="../Formatter/JavaFormatter" />
+/// <reference path="Language" />
+/// <reference path="Keywords" />
+/// <reference path="Operators" />
 
 module Code.Language
 {
@@ -48,78 +54,41 @@ module Code.Language
 				}
 			});
 			
-			const interpreter = new Interpreter.JavaInterpreter(
-				[
-					"true",
-					"false",
-					"if",
-					"else",
-					"switch",
-					"case",
-					"default",
-					"for",
-					"foreach",
-					"in",
-					"public",
-					"protected",
-					"private",
-					"return",
-					"new",
-					"class",
-				],
-				[
-					"=",
-					"+",
-					"-",
-					"*",
-					"/",
-					"+=",
-					"-=",
-					"*=",
-					"/=",
-					"==",
-					"!=",
-					"<",
-					">",
-					"<=",
-					">=",
-					"||",
-					"&&",
-					"!",
-					".",
-				]
-			);
-			const language = new Language("java", lexer, interpreter, formatter);
-			this.languagesByNames.add(language.name, language);
-			
-			/*{
-				const language = Factory.JavaFactory.createLanguage(lexer, formatter);
+			{
+				const interpreter = new Interpreter.JavaInterpreter(Keywords.JAVA, Operators.JAVA);
+				const language = new Language("java", lexer, interpreter, formatter);
 				this.languagesByNames.add(language.name, language);
 			}
 			{
-				const language = Factory.CSharpFactory.createLanguage(lexer, formatter);
+				const interpreter = new Interpreter.JavaInterpreter(Keywords.CS, Operators.CS);
+				const language = new Language("c#", lexer, interpreter, formatter);
 				this.languagesByNames.add(language.name, language);
 			}
 			{
-				const language = Factory.PHPFactory.createLanguage(lexer, formatter);
+				const interpreter = new Interpreter.JavaInterpreter(Keywords.PHP, Operators.PHP);
+				const language = new Language("php", lexer, interpreter, formatter);
 				this.languagesByNames.add(language.name, language);
 			}
 			{
-				const language = Factory.JavascriptFactory.createLanguage(lexer, formatter);
+				const interpreter = new Interpreter.JavaInterpreter(Keywords.JS, Operators.JS);
+				const language = new Language("js", lexer, interpreter, formatter);
 				this.languagesByNames.add(language.name, language);
 			}
 			{
-				const language = Factory.TypescriptFactory.createLanguage(lexer, formatter);
+				const interpreter = new Interpreter.TypescriptInterpreter(Keywords.TS, Operators.TS);
+				const language = new Language("ts", lexer, interpreter, formatter);
 				this.languagesByNames.add(language.name, language);
 			}
 			{
-				const language = Factory.ShellFactory.createLanguage(lexer, formatter);
+				const interpreter = new Interpreter.JavaInterpreter(Keywords.SH, Operators.SH);
+				const language = new Language("sh", lexer, interpreter, formatter);
 				this.languagesByNames.add(language.name, language);
 			}
 			{
-				const language = Factory.JassFactory.createLanguage(lexer, formatter);
+				const interpreter = new Interpreter.JavaInterpreter(Keywords.JASS, Operators.JASS);
+				const language = new Language("jass", lexer, interpreter, formatter);
 				this.languagesByNames.add(language.name, language);
-			}*/
+			}
 		}
 
 		getAllLanguages()
@@ -129,8 +98,6 @@ module Code.Language
 		
 		getLanguageByName(name: string)
 		{
-			return this.languagesByNames.get("java");
-			
 			if (!this.languagesByNames.contains(name))
 				throw new RangeError("Could not get language. No language with name \"" + name + "\" found.");	
 			

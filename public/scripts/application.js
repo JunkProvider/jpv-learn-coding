@@ -78,10 +78,18 @@ var Code;
                     this.text += String.fromCharCode(this.chars[i]);
                 }
             }
-            Segment.prototype.getNextRelevantSibling = function () {
+            Segment.prototype.getNextRelevantText = function () {
+                var segment = this.getNextRelevant();
+                return segment != null ? segment.text : "";
+            };
+            Segment.prototype.getNextRelevant = function () {
                 return this.getNextMatchingSibling(function (segment) { return segment.lexerHint != Lexer.LexerHint.WHITESPACE && segment.lexerHint != Lexer.LexerHint.COMMENT; });
             };
-            Segment.prototype.getPrevRelevantSibling = function () {
+            Segment.prototype.getPrevRelevantText = function () {
+                var segment = this.getPrevRelevant();
+                return segment != null ? segment.text : "";
+            };
+            Segment.prototype.getPrevRelevant = function () {
                 return this.getPrevMatchingSibling(function (segment) { return segment.lexerHint != Lexer.LexerHint.WHITESPACE && segment.lexerHint != Lexer.LexerHint.COMMENT; });
             };
             Segment.prototype.getNextMatchingSibling = function (isMatching) {
@@ -114,268 +122,23 @@ var Code;
 (function (Code) {
     var Lexer;
     (function (Lexer) {
-        var SymbolFinder = (function () {
-            function SymbolFinder(searchedChars, hint) {
-                this.searchedChars = [];
-                this.searchedChars = searchedChars;
-                this.hint = hint;
+        var SingleLineCommentFinder = (function () {
+            function SingleLineCommentFinder() {
             }
-            SymbolFinder.createFromString = function (chars, hint) {
-                var charCodes = [];
-                for (var i = 0; i < chars.length; i++) {
-                    charCodes.push(chars.charCodeAt(i));
-                }
-                return new SymbolFinder(charCodes, hint);
-            };
-            SymbolFinder.createFromStringArray = function (chars, hint) {
-                var charCodes = [];
-                for (var _i = 0; _i < chars.length; _i++) {
-                    var char = chars[_i];
-                    if (char.length != 1)
-                        throw new Error("Each string must be a single char!");
-                    charCodes.push(char.charCodeAt(0));
-                }
-                return new SymbolFinder(charCodes, hint);
-            };
-            SymbolFinder.prototype.find = function (stream) {
-                var char = stream.peek();
-                var searchedChars = this.searchedChars;
-                for (var i = 0, len = searchedChars.length; i < len; i++) {
-                    if (char == searchedChars[i]) {
-                        return new Lexer.Segment([stream.read()], this.hint);
-                    }
-                }
-                return null;
-            };
-            return SymbolFinder;
-        })();
-        Lexer.SymbolFinder = SymbolFinder;
-    })(Lexer = Code.Lexer || (Code.Lexer = {}));
-})(Code || (Code = {}));
-var Code;
-(function (Code) {
-    var Lexer;
-    (function (Lexer) {
-        var Stream = (function () {
-            function Stream(chars) {
-                this.index = 0;
-                this.chars = chars;
-                this.length = chars.length;
-                this.lastIndex = this.length - 1;
-            }
-            Stream.createFromString = function (value) {
-                var chars = [];
-                for (var i = 0; i < value.length; i++) {
-                    chars.push(value.charCodeAt(i));
-                }
-                return new Stream(chars);
-            };
-            Stream.prototype.eos = function () {
-                return this.index > this.lastIndex;
-            };
-            Stream.prototype.peek = function (offset) {
-                if (offset === void 0) { offset = 0; }
-                var index = this.index + offset;
-                if (index < 0 || index > this.lastIndex)
-                    return -1;
-                return this.chars[index];
-            };
-            Stream.prototype.read = function () {
-                if (this.index > this.lastIndex)
-                    return -1;
-                return this.chars[this.index++];
-            };
-            Stream.prototype.readMultiple = function (count) {
-                var start = this.index;
-                this.index += count;
-                return this.chars.slice(start, start + count);
-            };
-            return Stream;
-        })();
-        Lexer.Stream = Stream;
-    })(Lexer = Code.Lexer || (Code.Lexer = {}));
-})(Code || (Code = {}));
-var Code;
-(function (Code) {
-    var View;
-    (function (View) {
-        var SegmentData = (function () {
-            function SegmentData(text, lexerHint, interpreterHint) {
-                this.text = text;
-                this.lexerHint = lexerHint;
-                this.interpreterHint = interpreterHint;
-            }
-            ;
-            return SegmentData;
-        })();
-        View.SegmentData = SegmentData;
-        var CodeContainer = (function () {
-            function CodeContainer(selection, language) {
-                this.segmentClickedEvent = new JPV.Event.Event();
-                this.selection = selection;
-                this.language = language;
-                this.initialize();
-            }
-            CodeContainer.prototype.initialize = function () {
-                var _this = this;
-                var text = this.selection.text();
-                text = text.substring(1, text.length - 2);
-                var lines = text.split('\n');
-                var minTabs = null;
-                for (var i = 0; i < lines.length; i++) {
-                    var line = lines[i];
-                    if (line.trim() == "") {
-                        continue;
-                    }
-                    var tabs = 0;
-                    for (var j = 0; j < line.length; j++) {
-                        if (line[j] == '\t') {
-                            tabs++;
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    if (minTabs == null || tabs < minTabs) {
-                        minTabs = tabs;
-                    }
-                }
-                for (var i = 0; i < lines.length; i++) {
-                    lines[i] = lines[i].substring(minTabs, lines[i].length);
-                }
-                text = lines.join('\n');
-                var segments = this.language.getLexer().lex(text);
-                this.language.getInterpreter().interpret(segments);
-                var html = this.language.getFormatter().format(segments);
-                this.selection.html(html);
-                this.selection.on("click", ".segment", function () {
-                    var InterpreterHint = Code.Interpreter.InterpreterHint;
-                    var $segment = $(this);
-                    var lexerHint = parseInt($segment.data("lexer-hint"));
-                    var interpreterHint = parseInt($segment.data("interpreter-hint"));
-                    if (interpreterHint != InterpreterHint.NONE) {
-                        if (interpreterHint == InterpreterHint.TYPE) {
-                            alert("type");
-                        }
-                    }
-                    _this.segmentClickedEvent.trigger(this, new SegmentData($segment.text(), lexerHint, interpreterHint));
-                });
-            };
-            CodeContainer.prototype.setDisplayed = function (displayed) {
-                this.selection.css("display", displayed ? "" : "none");
-            };
-            return CodeContainer;
-        })();
-        View.CodeContainer = CodeContainer;
-    })(View = Code.View || (Code.View = {}));
-})(Code || (Code = {}));
-var Code;
-(function (Code) {
-    var Language;
-    (function (Language_1) {
-        var Language = (function () {
-            function Language(name, lexer, interpreter, formatter) {
-                this._name = name;
-                this.lexer = lexer;
-                this.interpreter = interpreter;
-                this.formatter = formatter;
-            }
-            Object.defineProperty(Language.prototype, "name", {
-                get: function () { return this._name; },
-                enumerable: true,
-                configurable: true
-            });
-            Language.prototype.getLexer = function () {
-                return this.lexer;
-            };
-            Language.prototype.getInterpreter = function () {
-                return this.interpreter;
-            };
-            Language.prototype.getFormatter = function () {
-                return this.formatter;
-            };
-            return Language;
-        })();
-        Language_1.Language = Language;
-    })(Language = Code.Language || (Code.Language = {}));
-})(Code || (Code = {}));
-var Application_Old;
-(function (Application_Old) {
-    var Operators = (function () {
-        function Operators() {
-        }
-        Operators.BASIC = [
-            "=",
-            "+",
-            "-",
-            "*",
-            "/",
-            "+=",
-            "-=",
-            "*=",
-            "/=",
-            "==",
-            "!=",
-            "<",
-            ">",
-            "<=",
-            ">=",
-            "||",
-            "&&",
-            "!",
-            ".",
-        ];
-        Operators.JAVA = Operators.BASIC;
-        Operators.CS = Operators.BASIC;
-        Operators.PHP = Operators.BASIC.concat(["->"]);
-        Operators.JS = Operators.BASIC;
-        Operators.TS = Operators.BASIC;
-        Operators.SH = [
-            "=",
-        ];
-        Operators.JASS = [
-            "=",
-            "+",
-            "-",
-            "*",
-            "/",
-            "==",
-            "!=",
-            "<",
-            ">",
-            "<=",
-            ">=",
-            ".",
-        ];
-        return Operators;
-    })();
-    Application_Old.Operators = Operators;
-})(Application_Old || (Application_Old = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="Segment" />
-var Code;
-(function (Code) {
-    var Lexer;
-    (function (Lexer) {
-        var WordFinder = (function () {
-            function WordFinder() {
-            }
-            WordFinder.prototype.find = function (stream) {
-                var firstChar = stream.peek();
-                if (!Common.CharCode.isLetter(firstChar) && firstChar != Common.CharCode.SCORE)
+            SingleLineCommentFinder.prototype.find = function (stream) {
+                if (stream.peek() != Common.CharCode.SLASH || stream.peek(1) != Common.CharCode.SLASH)
                     return null;
-                var chars = [];
+                var chars = [stream.read()];
                 for (var char = stream.read(); char != -1; char = stream.read()) {
                     chars.push(char);
-                    var nextChar = stream.peek();
-                    if (!Common.CharCode.isAlphanumeric(nextChar) && nextChar != Common.CharCode.SCORE)
+                    if (stream.peek() == Common.CharCode.LINE_BREAK)
                         break;
                 }
-                return new Lexer.Segment(chars, Lexer.LexerHint.WORD);
+                return new Lexer.Segment(chars, Lexer.LexerHint.COMMENT);
             };
-            return WordFinder;
+            return SingleLineCommentFinder;
         })();
-        Lexer.WordFinder = WordFinder;
+        Lexer.SingleLineCommentFinder = SingleLineCommentFinder;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));
 /// <reference path="../../Common/CharCode" />
@@ -423,6 +186,308 @@ var Code;
         Lexer.SequenceFinder = SequenceFinder;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="Segment" />
+var Code;
+(function (Code) {
+    var Lexer;
+    (function (Lexer) {
+        var StringLiteralFinder = (function () {
+            function StringLiteralFinder() {
+            }
+            StringLiteralFinder.prototype.find = function (stream) {
+                var delimiterChar = stream.peek();
+                if (delimiterChar != Common.CharCode.DOUBLE_QUOTE && delimiterChar != Common.CharCode.SINGLE_QUOTE)
+                    return null;
+                var chars = [stream.read()];
+                for (var char = stream.read(); char != -1; char = stream.read()) {
+                    chars.push(char);
+                    if (char == delimiterChar)
+                        break;
+                }
+                return new Lexer.Segment(chars, Lexer.LexerHint.STRING);
+            };
+            return StringLiteralFinder;
+        })();
+        Lexer.StringLiteralFinder = StringLiteralFinder;
+    })(Lexer = Code.Lexer || (Code.Lexer = {}));
+})(Code || (Code = {}));
+var Code;
+(function (Code) {
+    var Language;
+    (function (Language) {
+        var Keywords = (function () {
+            function Keywords() {
+            }
+            Keywords.JAVA_AND_CS = [
+                "true",
+                "false",
+                "if",
+                "else",
+                "switch",
+                "case",
+                "default",
+                "for",
+                "foreach",
+                "in",
+                "public",
+                "protected",
+                "private",
+                "return",
+                "new",
+                "class",
+            ];
+            Keywords.JAVA = Keywords.JAVA_AND_CS;
+            Keywords.CS = Keywords.JAVA_AND_CS;
+            Keywords.PHP = [
+                "echo",
+                "true",
+                "false",
+                "if",
+                "else",
+                "switch",
+                "case",
+                "default",
+                "for",
+                "foreach",
+                "as",
+                "public",
+                "protected",
+                "private",
+                "function",
+                "return",
+                "new",
+                "class",
+            ];
+            Keywords.JS = [
+                "var",
+                "true",
+                "false",
+                "if",
+                "else",
+                "switch",
+                "case",
+                "default",
+                "for",
+                "in",
+                "function",
+                "return",
+                "new",
+            ];
+            Keywords.TS = [
+                "var",
+                "let",
+                "const",
+                "true",
+                "false",
+                "if",
+                "else",
+                "switch",
+                "case",
+                "default",
+                "for",
+                "in",
+                "of",
+                "public",
+                "protected",
+                "private",
+                "function",
+                "return",
+                "new",
+                "class",
+                "get",
+                "set",
+            ];
+            Keywords.SH = [
+                "echo",
+                "if",
+                "then",
+                "else",
+                "fi",
+                "while",
+                "do",
+                "done",
+            ];
+            Keywords.JASS = [
+                "local",
+                "array",
+                "set",
+                "true",
+                "false",
+                "if",
+                "then",
+                "else",
+                "endif",
+                "loop",
+                "exitwhen",
+                "endloop",
+                "call",
+                "function",
+                "takes",
+                "returns",
+                "return",
+                "endfunction",
+                "public",
+                "private",
+                "static",
+                "struct",
+                "method",
+                "endmethod",
+            ];
+            return Keywords;
+        })();
+        Language.Keywords = Keywords;
+    })(Language = Code.Language || (Code.Language = {}));
+})(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="Segment" />
+var Code;
+(function (Code) {
+    var Lexer;
+    (function (Lexer) {
+        var SymbolFinder = (function () {
+            function SymbolFinder(searchedChars, hint) {
+                this.searchedChars = [];
+                this.searchedChars = searchedChars;
+                this.hint = hint;
+            }
+            SymbolFinder.createFromString = function (chars, hint) {
+                var charCodes = [];
+                for (var i = 0; i < chars.length; i++) {
+                    charCodes.push(chars.charCodeAt(i));
+                }
+                return new SymbolFinder(charCodes, hint);
+            };
+            SymbolFinder.createFromStringArray = function (chars, hint) {
+                var charCodes = [];
+                for (var _i = 0; _i < chars.length; _i++) {
+                    var char = chars[_i];
+                    if (char.length != 1)
+                        throw new Error("Each string must be a single char!");
+                    charCodes.push(char.charCodeAt(0));
+                }
+                return new SymbolFinder(charCodes, hint);
+            };
+            SymbolFinder.prototype.find = function (stream) {
+                var char = stream.peek();
+                var searchedChars = this.searchedChars;
+                for (var i = 0, len = searchedChars.length; i < len; i++) {
+                    if (char == searchedChars[i]) {
+                        return new Lexer.Segment([stream.read()], this.hint);
+                    }
+                }
+                return null;
+            };
+            return SymbolFinder;
+        })();
+        Lexer.SymbolFinder = SymbolFinder;
+    })(Lexer = Code.Lexer || (Code.Lexer = {}));
+})(Code || (Code = {}));
+var Code;
+(function (Code) {
+    var Interpreter;
+    (function (Interpreter) {
+        (function (InterpreterHint) {
+            InterpreterHint[InterpreterHint["NONE"] = 0] = "NONE";
+            InterpreterHint[InterpreterHint["TYPE"] = 1] = "TYPE";
+            InterpreterHint[InterpreterHint["VARIABLE"] = 2] = "VARIABLE";
+            InterpreterHint[InterpreterHint["FUNCTION"] = 3] = "FUNCTION";
+            InterpreterHint[InterpreterHint["KEYWORD"] = 4] = "KEYWORD";
+            InterpreterHint[InterpreterHint["OPERATOR"] = 5] = "OPERATOR";
+            InterpreterHint[InterpreterHint["SPECIAL_CHAR"] = 6] = "SPECIAL_CHAR";
+        })(Interpreter.InterpreterHint || (Interpreter.InterpreterHint = {}));
+        var InterpreterHint = Interpreter.InterpreterHint;
+    })(Interpreter = Code.Interpreter || (Code.Interpreter = {}));
+})(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="../Lexer/LexerHint" />
+/// <reference path="InterpreterHint" />
+var Code;
+(function (Code) {
+    var Interpreter;
+    (function (Interpreter) {
+        var JavaInterpreter = (function () {
+            function JavaInterpreter(keywords, operators) {
+                this.keywords = JPV.Collection.Map.createFromArray(keywords, function (keyword) { return keyword; });
+                this.operators = JPV.Collection.Map.createFromArray(operators, function (operator) { return operator; });
+            }
+            JavaInterpreter.prototype.interpret = function (segments) {
+                for (var _i = 0; _i < segments.length; _i++) {
+                    var segment = segments[_i];
+                    if (segment.lexerHint == Code.Lexer.LexerHint.WORD) {
+                        segment.interpreterHint = this.interpretWord(segment);
+                        continue;
+                    }
+                    if (segment.lexerHint == Code.Lexer.LexerHint.SPECIAL_CHAR) {
+                        segment.interpreterHint = this.interpretSpecialChar(segment);
+                        continue;
+                    }
+                }
+            };
+            JavaInterpreter.prototype.interpretSpecialChar = function (segment) {
+                var text = segment.text;
+                if (this.operators.contains(text))
+                    return Interpreter.InterpreterHint.OPERATOR;
+                return Interpreter.InterpreterHint.SPECIAL_CHAR;
+            };
+            JavaInterpreter.prototype.interpretWord = function (segment) {
+                var text = segment.text;
+                if (this.keywords.contains(text)) {
+                    return Interpreter.InterpreterHint.KEYWORD;
+                }
+                var prev = segment.getPrevRelevant();
+                var prevText = prev != null ? prev.text : "";
+                var prevHint = prev != null ? prev.lexerHint : Code.Lexer.LexerHint.NONE;
+                var next = segment.getNextRelevant();
+                var nextText = next != null ? next.text : "";
+                var nextHint = next != null ? next.lexerHint : Code.Lexer.LexerHint.NONE;
+                if (prevText == "new")
+                    return Interpreter.InterpreterHint.TYPE;
+                if (nextHint == Code.Lexer.LexerHint.WORD)
+                    return Interpreter.InterpreterHint.TYPE;
+                if (nextText == '(')
+                    return Interpreter.InterpreterHint.FUNCTION;
+                if (nextText == '[') {
+                    var nextButOne = next.getNextRelevant();
+                    if (nextButOne != null && nextButOne.text == ']')
+                        return Interpreter.InterpreterHint.TYPE;
+                }
+                if (Common.CharCode.isUpperCase(segment.chars[0]))
+                    return Interpreter.InterpreterHint.TYPE;
+                return Interpreter.InterpreterHint.VARIABLE;
+            };
+            return JavaInterpreter;
+        })();
+        Interpreter.JavaInterpreter = JavaInterpreter;
+    })(Interpreter = Code.Interpreter || (Code.Interpreter = {}));
+})(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="Segment" />
+var Code;
+(function (Code) {
+    var Lexer;
+    (function (Lexer) {
+        var NumberLiteralFinder = (function () {
+            function NumberLiteralFinder() {
+            }
+            NumberLiteralFinder.prototype.find = function (stream) {
+                var firstChar = stream.peek();
+                if (!Common.CharCode.isNumber(firstChar))
+                    return null;
+                var chars = [];
+                for (var char = stream.read(); char != -1; char = stream.read()) {
+                    chars.push(char);
+                    var nextChar = stream.peek();
+                    if (!Common.CharCode.isNumber(nextChar) && nextChar != Common.CharCode.DOT && nextChar != Common.CharCode.f)
+                        break;
+                }
+                return new Lexer.Segment(chars, Lexer.LexerHint.NUMBER);
+            };
+            return NumberLiteralFinder;
+        })();
+        Lexer.NumberLiteralFinder = NumberLiteralFinder;
+    })(Lexer = Code.Lexer || (Code.Lexer = {}));
+})(Code || (Code = {}));
 /// <reference path="Segment" />
 /// <reference path="LexerHint" />
 var Code;
@@ -464,217 +529,6 @@ var Code;
         })();
         Lexer_1.Lexer = Lexer;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
-})(Code || (Code = {}));
-/// <reference path="../Lexer/Lexer" />
-var Code;
-(function (Code) {
-    var Language;
-    (function (Language) {
-        var LanguageService = (function () {
-            function LanguageService() {
-                this.languagesByNames = new JPV.Collection.Map();
-                var lexer = new Code.Lexer.Lexer([
-                    new Code.Lexer.MultiLineCommentFinder(),
-                    new Code.Lexer.SingleLineCommentFinder(),
-                    new Code.Lexer.StringLiteralFinder(),
-                    new Code.Lexer.NumberLiteralFinder(),
-                    new Code.Lexer.WordFinder(),
-                    Code.Lexer.SymbolFinder.createFromStringArray([' ', '\n', '\t'], Code.Lexer.LexerHint.WHITESPACE),
-                    Code.Lexer.SequenceFinder.createFromStringArray([
-                        "+=", "-=", "*=", "/=", "++", "--",
-                        "==", "!=", "<=", ">=",
-                        "===", "!==", "->",
-                    ], Code.Lexer.LexerHint.SPECIAL_CHAR),
-                    Code.Lexer.SymbolFinder.createFromString(".;=+-*/&|!<>{}()[]$:", Code.Lexer.LexerHint.SPECIAL_CHAR),
-                ]);
-                var formatter = new Code.Formatter.JavaFormatter({
-                    commentColor: "#8DB553",
-                    stringLiteralColor: "#4A93D1",
-                    numberLiteralColor: "#65B6CE",
-                    typeColor: "#A67DE0",
-                    variableColor: "#FFA500",
-                    functionColor: "#FFC600",
-                    defaultKeywordColor: "grey",
-                    keywordColors: {
-                        "true": "#65B6CE",
-                        "false": "#65B6CE",
-                    },
-                    keywordTitles: {},
-                    specialCharTitles: {}
-                });
-                var interpreter = new Code.Interpreter.JavaInterpreter([
-                    "true",
-                    "false",
-                    "if",
-                    "else",
-                    "switch",
-                    "case",
-                    "default",
-                    "for",
-                    "foreach",
-                    "in",
-                    "public",
-                    "protected",
-                    "private",
-                    "return",
-                    "new",
-                    "class",
-                ], [
-                    "=",
-                    "+",
-                    "-",
-                    "*",
-                    "/",
-                    "+=",
-                    "-=",
-                    "*=",
-                    "/=",
-                    "==",
-                    "!=",
-                    "<",
-                    ">",
-                    "<=",
-                    ">=",
-                    "||",
-                    "&&",
-                    "!",
-                    ".",
-                ]);
-                var language = new Language.Language("java", lexer, interpreter, formatter);
-                this.languagesByNames.add(language.name, language);
-                /*{
-                    const language = Factory.JavaFactory.createLanguage(lexer, formatter);
-                    this.languagesByNames.add(language.name, language);
-                }
-                {
-                    const language = Factory.CSharpFactory.createLanguage(lexer, formatter);
-                    this.languagesByNames.add(language.name, language);
-                }
-                {
-                    const language = Factory.PHPFactory.createLanguage(lexer, formatter);
-                    this.languagesByNames.add(language.name, language);
-                }
-                {
-                    const language = Factory.JavascriptFactory.createLanguage(lexer, formatter);
-                    this.languagesByNames.add(language.name, language);
-                }
-                {
-                    const language = Factory.TypescriptFactory.createLanguage(lexer, formatter);
-                    this.languagesByNames.add(language.name, language);
-                }
-                {
-                    const language = Factory.ShellFactory.createLanguage(lexer, formatter);
-                    this.languagesByNames.add(language.name, language);
-                }
-                {
-                    const language = Factory.JassFactory.createLanguage(lexer, formatter);
-                    this.languagesByNames.add(language.name, language);
-                }*/
-            }
-            LanguageService.prototype.getAllLanguages = function () {
-                return this.languagesByNames.toArray();
-            };
-            LanguageService.prototype.getLanguageByName = function (name) {
-                return this.languagesByNames.get("java");
-                if (!this.languagesByNames.contains(name))
-                    throw new RangeError("Could not get language. No language with name \"" + name + "\" found.");
-                return this.languagesByNames.get(name);
-            };
-            return LanguageService;
-        })();
-        Language.LanguageService = LanguageService;
-    })(Language = Code.Language || (Code.Language = {}));
-})(Code || (Code = {}));
-/// <reference path="CodeContainer" />
-var Code;
-(function (Code) {
-    var View;
-    (function (View) {
-        var MultiCodeBox = (function () {
-            function MultiCodeBox(selection, languageService) {
-                this.codeContainersByLanguageNames = new JPV.Collection.Map();
-                this.buttonsByLanguageNames = new JPV.Collection.Map();
-                this.selection = selection;
-                this.languageService = languageService;
-                this.initialize();
-            }
-            MultiCodeBox.prototype.initialize = function () {
-                var _this = this;
-                var $codeBoxHead = this.selection.find(".code-box-head");
-                var first = true;
-                this.selection.find(".code-box-script").each(function () {
-                    var $codeContainer = $(this);
-                    var languageName = $codeContainer.data("title");
-                    var language = _this.languageService.getLanguageByName(languageName);
-                    var codeContainer = new View.CodeContainer($codeContainer, language);
-                    codeContainer.setDisplayed(false);
-                    _this.codeContainersByLanguageNames.add(languageName, codeContainer);
-                    // JQuery does not get which .text i want to call
-                    var $button = $("<div>")
-                        .addClass("code-box-button")
-                        .text(languageName)
-                        .appendTo($codeBoxHead);
-                    _this.buttonsByLanguageNames.add(languageName, $button);
-                    $button.on("click", function () {
-                        var $clickedButton = $(this);
-                        var clickedButtonLanguageName = $button.text();
-                        // Set only the clicked button to 'pressed'
-                        _this.buttonsByLanguageNames.forEach(function ($button, languageName) {
-                            $button.toggleClass("pressed", languageName == clickedButtonLanguageName);
-                        });
-                        // Show only the code which belongs to the clicked button
-                        _this.codeContainersByLanguageNames.forEach(function (codeContainer, languageName) {
-                            codeContainer.setDisplayed(languageName == clickedButtonLanguageName);
-                        });
-                    });
-                });
-                this.buttonsByLanguageNames.toArray()[0].trigger("click");
-            };
-            return MultiCodeBox;
-        })();
-        View.MultiCodeBox = MultiCodeBox;
-    })(View = Code.View || (Code.View = {}));
-})(Code || (Code = {}));
-/// <reference path="../Code/Language/LanguageService" />
-/// <reference path="../Code/View/MultiCodeBox" />
-var Application;
-(function (Application_1) {
-    var Application = (function () {
-        function Application() {
-            this.languageService = new Code.Language.LanguageService();
-        }
-        Application.prototype.run = function () {
-            var _this = this;
-            $(".single-code-box").each(function () {
-                var $codeContainer = $(this).find(".code-box-script");
-                var languageName = $codeContainer.data("title");
-                var language = _this.languageService.getLanguageByName(languageName);
-                new Code.View.CodeContainer($codeContainer, language);
-            });
-            $(".multi-code-box").each(function () {
-                var $codeBox = $(this);
-                new Code.View.MultiCodeBox($codeBox, _this.languageService);
-            });
-        };
-        return Application;
-    })();
-    Application_1.Application = Application;
-})(Application || (Application = {}));
-var Code;
-(function (Code) {
-    var Interpreter;
-    (function (Interpreter) {
-        (function (InterpreterHint) {
-            InterpreterHint[InterpreterHint["NONE"] = 0] = "NONE";
-            InterpreterHint[InterpreterHint["TYPE"] = 1] = "TYPE";
-            InterpreterHint[InterpreterHint["VARIABLE"] = 2] = "VARIABLE";
-            InterpreterHint[InterpreterHint["FUNCTION"] = 3] = "FUNCTION";
-            InterpreterHint[InterpreterHint["KEYWORD"] = 4] = "KEYWORD";
-            InterpreterHint[InterpreterHint["OPERATOR"] = 5] = "OPERATOR";
-            InterpreterHint[InterpreterHint["SPECIAL_CHAR"] = 6] = "SPECIAL_CHAR";
-        })(Interpreter.InterpreterHint || (Interpreter.InterpreterHint = {}));
-        var InterpreterHint = Interpreter.InterpreterHint;
-    })(Interpreter = Code.Interpreter || (Code.Interpreter = {}));
 })(Code || (Code = {}));
 /// <reference path="../../Common/CharCode" />
 /// <reference path="../Lexer/LexerHint" />
@@ -789,248 +643,47 @@ var Code;
         Formatter.JavaFormatter = JavaFormatter;
     })(Formatter = Code.Formatter || (Code.Formatter = {}));
 })(Code || (Code = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="../Lexer/LexerHint" />
-/// <reference path="InterpreterHint" />
-var Code;
-(function (Code) {
-    var Interpreter;
-    (function (Interpreter) {
-        var JavaInterpreter = (function () {
-            function JavaInterpreter(keywords, operators) {
-                this.keywords = JPV.Collection.Map.createFromArray(keywords, function (keyword) { return keyword; });
-                this.operators = JPV.Collection.Map.createFromArray(operators, function (operator) { return operator; });
-            }
-            JavaInterpreter.prototype.interpret = function (segments) {
-                for (var _i = 0; _i < segments.length; _i++) {
-                    var segment = segments[_i];
-                    if (segment.lexerHint == Code.Lexer.LexerHint.WORD) {
-                        segment.interpreterHint = this.interpretWord(segment);
-                        continue;
-                    }
-                    if (segment.lexerHint == Code.Lexer.LexerHint.SPECIAL_CHAR) {
-                        segment.interpreterHint = this.interpretSpecialChar(segment);
-                        continue;
-                    }
-                }
-            };
-            JavaInterpreter.prototype.interpretSpecialChar = function (segment) {
-                var text = segment.text;
-                if (this.operators.contains(text))
-                    return Interpreter.InterpreterHint.OPERATOR;
-                return Interpreter.InterpreterHint.SPECIAL_CHAR;
-            };
-            JavaInterpreter.prototype.interpretWord = function (segment) {
-                var text = segment.text;
-                if (this.keywords.contains(text)) {
-                    return Interpreter.InterpreterHint.KEYWORD;
-                }
-                var prev = segment.getPrevRelevantSibling();
-                var prevText = prev != null ? prev.text : "";
-                var prevHint = prev != null ? prev.lexerHint : Code.Lexer.LexerHint.NONE;
-                var next = segment.getNextRelevantSibling();
-                var nextText = next != null ? next.text : "";
-                var nextHint = next != null ? next.lexerHint : Code.Lexer.LexerHint.NONE;
-                if (prevText == "new")
-                    return Interpreter.InterpreterHint.TYPE;
-                if (nextHint == Code.Lexer.LexerHint.WORD)
-                    return Interpreter.InterpreterHint.TYPE;
-                if (nextText == '(')
-                    return Interpreter.InterpreterHint.FUNCTION;
-                if (nextText == '[') {
-                    var nextButOne = next.getNextRelevantSibling();
-                    if (nextButOne != null && nextButOne.text == ']')
-                        return Interpreter.InterpreterHint.TYPE;
-                }
-                if (Common.CharCode.isUpperCase(segment.chars[0]))
-                    return Interpreter.InterpreterHint.TYPE;
-                return Interpreter.InterpreterHint.VARIABLE;
-            };
-            return JavaInterpreter;
-        })();
-        Interpreter.JavaInterpreter = JavaInterpreter;
-    })(Interpreter = Code.Interpreter || (Code.Interpreter = {}));
-})(Code || (Code = {}));
-var Application_Old;
-(function (Application_Old) {
-    var Language;
-    (function (Language) {
-        var Factory;
-        (function (Factory) {
-            var Keywords = (function () {
-                function Keywords() {
-                }
-                Keywords.JAVA_AND_CS = [
-                    "true",
-                    "false",
-                    "if",
-                    "else",
-                    "switch",
-                    "case",
-                    "default",
-                    "for",
-                    "foreach",
-                    "in",
-                    "public",
-                    "protected",
-                    "private",
-                    "return",
-                    "new",
-                    "class",
-                ];
-                Keywords.JAVA = Keywords.JAVA_AND_CS;
-                Keywords.CS = Keywords.JAVA_AND_CS;
-                Keywords.PHP = [
-                    "echo",
-                    "true",
-                    "false",
-                    "if",
-                    "else",
-                    "switch",
-                    "case",
-                    "default",
-                    "for",
-                    "foreach",
-                    "as",
-                    "public",
-                    "protected",
-                    "private",
-                    "function",
-                    "return",
-                    "new",
-                    "class",
-                ];
-                Keywords.JS = [
-                    "var",
-                    "true",
-                    "false",
-                    "if",
-                    "else",
-                    "switch",
-                    "case",
-                    "default",
-                    "for",
-                    "in",
-                    "function",
-                    "return",
-                    "new",
-                ];
-                Keywords.TS = [
-                    "var",
-                    "let",
-                    "const",
-                    "true",
-                    "false",
-                    "if",
-                    "else",
-                    "switch",
-                    "case",
-                    "default",
-                    "for",
-                    "in",
-                    "of",
-                    "public",
-                    "protected",
-                    "private",
-                    "function",
-                    "return",
-                    "new",
-                    "class",
-                    "get",
-                    "set",
-                ];
-                Keywords.SH = [
-                    "echo",
-                    "if",
-                    "then",
-                    "else",
-                    "fi",
-                    "while",
-                    "do",
-                    "done",
-                ];
-                Keywords.JASS = [
-                    "local",
-                    "array",
-                    "set",
-                    "true",
-                    "false",
-                    "if",
-                    "then",
-                    "else",
-                    "endif",
-                    "loop",
-                    "exitwhen",
-                    "endloop",
-                    "call",
-                    "function",
-                    "takes",
-                    "returns",
-                    "return",
-                    "endfunction",
-                    "public",
-                    "private",
-                    "static",
-                    "struct",
-                    "method",
-                    "endmethod",
-                ];
-                return Keywords;
-            })();
-            Factory.Keywords = Keywords;
-        })(Factory = Language.Factory || (Language.Factory = {}));
-    })(Language = Application_Old.Language || (Application_Old.Language = {}));
-})(Application_Old || (Application_Old = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="Segment" />
 var Code;
 (function (Code) {
     var Lexer;
     (function (Lexer) {
-        var NumberLiteralFinder = (function () {
-            function NumberLiteralFinder() {
+        var Stream = (function () {
+            function Stream(chars) {
+                this.index = 0;
+                this.chars = chars;
+                this.length = chars.length;
+                this.lastIndex = this.length - 1;
             }
-            NumberLiteralFinder.prototype.find = function (stream) {
-                var firstChar = stream.peek();
-                if (!Common.CharCode.isNumber(firstChar))
-                    return null;
+            Stream.createFromString = function (value) {
                 var chars = [];
-                for (var char = stream.read(); char != -1; char = stream.read()) {
-                    chars.push(char);
-                    var nextChar = stream.peek();
-                    if (!Common.CharCode.isNumber(nextChar) && nextChar != Common.CharCode.DOT && nextChar != Common.CharCode.f)
-                        break;
+                for (var i = 0; i < value.length; i++) {
+                    chars.push(value.charCodeAt(i));
                 }
-                return new Lexer.Segment(chars, Lexer.LexerHint.NUMBER);
+                return new Stream(chars);
             };
-            return NumberLiteralFinder;
-        })();
-        Lexer.NumberLiteralFinder = NumberLiteralFinder;
-    })(Lexer = Code.Lexer || (Code.Lexer = {}));
-})(Code || (Code = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="Segment" />
-var Code;
-(function (Code) {
-    var Lexer;
-    (function (Lexer) {
-        var SingleLineCommentFinder = (function () {
-            function SingleLineCommentFinder() {
-            }
-            SingleLineCommentFinder.prototype.find = function (stream) {
-                if (stream.peek() != Common.CharCode.SLASH || stream.peek(1) != Common.CharCode.SLASH)
-                    return null;
-                var chars = [stream.read()];
-                for (var char = stream.read(); char != -1; char = stream.read()) {
-                    chars.push(char);
-                    if (stream.peek() == Common.CharCode.LINE_BREAK)
-                        break;
-                }
-                return new Lexer.Segment(chars, Lexer.LexerHint.COMMENT);
+            Stream.prototype.eos = function () {
+                return this.index > this.lastIndex;
             };
-            return SingleLineCommentFinder;
+            Stream.prototype.peek = function (offset) {
+                if (offset === void 0) { offset = 0; }
+                var index = this.index + offset;
+                if (index < 0 || index > this.lastIndex)
+                    return -1;
+                return this.chars[index];
+            };
+            Stream.prototype.read = function () {
+                if (this.index > this.lastIndex)
+                    return -1;
+                return this.chars[this.index++];
+            };
+            Stream.prototype.readMultiple = function (count) {
+                var start = this.index;
+                this.index += count;
+                return this.chars.slice(start, start + count);
+            };
+            return Stream;
         })();
-        Lexer.SingleLineCommentFinder = SingleLineCommentFinder;
+        Lexer.Stream = Stream;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));
 /// <reference path="../../Common/CharCode" />
@@ -1059,28 +712,428 @@ var Code;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));
 /// <reference path="../../Common/CharCode" />
+/// <reference path="../Lexer/LexerHint" />
+/// <reference path="InterpreterHint" />
+var Code;
+(function (Code) {
+    var Interpreter;
+    (function (Interpreter) {
+        var TypescriptInterpreter = (function () {
+            function TypescriptInterpreter(keywords, operators) {
+                this.keywords = JPV.Collection.Map.createFromArray(keywords, function (keyword) { return keyword; });
+                this.operators = JPV.Collection.Map.createFromArray(operators, function (operator) { return operator; });
+            }
+            TypescriptInterpreter.prototype.interpret = function (segments) {
+                for (var _i = 0; _i < segments.length; _i++) {
+                    var segment = segments[_i];
+                    if (segment.lexerHint == Code.Lexer.LexerHint.WORD) {
+                        segment.interpreterHint = this.interpretWord(segment);
+                        continue;
+                    }
+                    if (segment.lexerHint == Code.Lexer.LexerHint.SPECIAL_CHAR) {
+                        segment.interpreterHint = this.interpretSpecialChar(segment);
+                        continue;
+                    }
+                }
+            };
+            TypescriptInterpreter.prototype.interpretSpecialChar = function (segment) {
+                var text = segment.text;
+                if (this.operators.contains(text))
+                    return Interpreter.InterpreterHint.OPERATOR;
+                return Interpreter.InterpreterHint.SPECIAL_CHAR;
+            };
+            TypescriptInterpreter.prototype.interpretWord = function (segment) {
+                var text = segment.text;
+                if (this.keywords.contains(text)) {
+                    return Interpreter.InterpreterHint.KEYWORD;
+                }
+                var prev = segment.getPrevRelevant();
+                var prevText = prev != null ? prev.text : "";
+                var prevHint = prev != null ? prev.lexerHint : Code.Lexer.LexerHint.NONE;
+                var next = segment.getNextRelevant();
+                var nextText = next != null ? next.text : "";
+                var nextHint = next != null ? next.lexerHint : Code.Lexer.LexerHint.NONE;
+                if (prevText == "new" || prevText == ':')
+                    return Interpreter.InterpreterHint.TYPE;
+                if (nextHint == Code.Lexer.LexerHint.WORD)
+                    return Interpreter.InterpreterHint.TYPE;
+                if (nextText == '(')
+                    return Interpreter.InterpreterHint.FUNCTION;
+                if (nextText == '[') {
+                    var nextButOne = next.getNextRelevant();
+                    if (nextButOne != null && nextButOne.text == ']')
+                        return Interpreter.InterpreterHint.TYPE;
+                }
+                if (Common.CharCode.isUpperCase(segment.chars[0]))
+                    return Interpreter.InterpreterHint.TYPE;
+                return Interpreter.InterpreterHint.VARIABLE;
+            };
+            return TypescriptInterpreter;
+        })();
+        Interpreter.TypescriptInterpreter = TypescriptInterpreter;
+    })(Interpreter = Code.Interpreter || (Code.Interpreter = {}));
+})(Code || (Code = {}));
+var Code;
+(function (Code) {
+    var Language;
+    (function (Language_1) {
+        var Language = (function () {
+            function Language(name, lexer, interpreter, formatter) {
+                this._name = name;
+                this.lexer = lexer;
+                this.interpreter = interpreter;
+                this.formatter = formatter;
+            }
+            Object.defineProperty(Language.prototype, "name", {
+                get: function () { return this._name; },
+                enumerable: true,
+                configurable: true
+            });
+            Language.prototype.getLexer = function () {
+                return this.lexer;
+            };
+            Language.prototype.getInterpreter = function () {
+                return this.interpreter;
+            };
+            Language.prototype.getFormatter = function () {
+                return this.formatter;
+            };
+            return Language;
+        })();
+        Language_1.Language = Language;
+    })(Language = Code.Language || (Code.Language = {}));
+})(Code || (Code = {}));
+var Code;
+(function (Code) {
+    var Language;
+    (function (Language) {
+        var Operators = (function () {
+            function Operators() {
+            }
+            Operators.BASIC = [
+                "=",
+                "+",
+                "-",
+                "*",
+                "/",
+                "+=",
+                "-=",
+                "*=",
+                "/=",
+                "==",
+                "!=",
+                "<",
+                ">",
+                "<=",
+                ">=",
+                "||",
+                "&&",
+                "!",
+                ".",
+            ];
+            Operators.JAVA = Operators.BASIC;
+            Operators.CS = Operators.BASIC;
+            Operators.PHP = Operators.BASIC.concat(["->"]);
+            Operators.JS = Operators.BASIC;
+            Operators.TS = Operators.JS;
+            Operators.SH = [
+                "=",
+            ];
+            Operators.JASS = [
+                "=",
+                "+",
+                "-",
+                "*",
+                "/",
+                "==",
+                "!=",
+                "<",
+                ">",
+                "<=",
+                ">=",
+                ".",
+            ];
+            return Operators;
+        })();
+        Language.Operators = Operators;
+    })(Language = Code.Language || (Code.Language = {}));
+})(Code || (Code = {}));
+/// <reference path="../Lexer/Lexer" />
+/// <reference path="../Interpreter/JavaInterpreter" />
+/// <reference path="../Interpreter/TypescriptInterpreter" />
+/// <reference path="../Formatter/JavaFormatter" />
+/// <reference path="Language" />
+/// <reference path="Keywords" />
+/// <reference path="Operators" />
+var Code;
+(function (Code) {
+    var Language;
+    (function (Language) {
+        var LanguageService = (function () {
+            function LanguageService() {
+                this.languagesByNames = new JPV.Collection.Map();
+                var lexer = new Code.Lexer.Lexer([
+                    new Code.Lexer.MultiLineCommentFinder(),
+                    new Code.Lexer.SingleLineCommentFinder(),
+                    new Code.Lexer.StringLiteralFinder(),
+                    new Code.Lexer.NumberLiteralFinder(),
+                    new Code.Lexer.WordFinder(),
+                    Code.Lexer.SymbolFinder.createFromStringArray([' ', '\n', '\t'], Code.Lexer.LexerHint.WHITESPACE),
+                    Code.Lexer.SequenceFinder.createFromStringArray([
+                        "+=", "-=", "*=", "/=", "++", "--",
+                        "==", "!=", "<=", ">=",
+                        "===", "!==", "->",
+                    ], Code.Lexer.LexerHint.SPECIAL_CHAR),
+                    Code.Lexer.SymbolFinder.createFromString(".;=+-*/&|!<>{}()[]$:", Code.Lexer.LexerHint.SPECIAL_CHAR),
+                ]);
+                var formatter = new Code.Formatter.JavaFormatter({
+                    commentColor: "#8DB553",
+                    stringLiteralColor: "#4A93D1",
+                    numberLiteralColor: "#65B6CE",
+                    typeColor: "#A67DE0",
+                    variableColor: "#FFA500",
+                    functionColor: "#FFC600",
+                    defaultKeywordColor: "grey",
+                    keywordColors: {
+                        "true": "#65B6CE",
+                        "false": "#65B6CE",
+                    },
+                    keywordTitles: {},
+                    specialCharTitles: {}
+                });
+                {
+                    var interpreter = new Code.Interpreter.JavaInterpreter(Language.Keywords.JAVA, Language.Operators.JAVA);
+                    var language = new Language.Language("java", lexer, interpreter, formatter);
+                    this.languagesByNames.add(language.name, language);
+                }
+                {
+                    var interpreter = new Code.Interpreter.JavaInterpreter(Language.Keywords.CS, Language.Operators.CS);
+                    var language = new Language.Language("c#", lexer, interpreter, formatter);
+                    this.languagesByNames.add(language.name, language);
+                }
+                {
+                    var interpreter = new Code.Interpreter.JavaInterpreter(Language.Keywords.PHP, Language.Operators.PHP);
+                    var language = new Language.Language("php", lexer, interpreter, formatter);
+                    this.languagesByNames.add(language.name, language);
+                }
+                {
+                    var interpreter = new Code.Interpreter.JavaInterpreter(Language.Keywords.JS, Language.Operators.JS);
+                    var language = new Language.Language("js", lexer, interpreter, formatter);
+                    this.languagesByNames.add(language.name, language);
+                }
+                {
+                    var interpreter = new Code.Interpreter.TypescriptInterpreter(Language.Keywords.TS, Language.Operators.TS);
+                    var language = new Language.Language("ts", lexer, interpreter, formatter);
+                    this.languagesByNames.add(language.name, language);
+                }
+                {
+                    var interpreter = new Code.Interpreter.JavaInterpreter(Language.Keywords.SH, Language.Operators.SH);
+                    var language = new Language.Language("sh", lexer, interpreter, formatter);
+                    this.languagesByNames.add(language.name, language);
+                }
+                {
+                    var interpreter = new Code.Interpreter.JavaInterpreter(Language.Keywords.JASS, Language.Operators.JASS);
+                    var language = new Language.Language("jass", lexer, interpreter, formatter);
+                    this.languagesByNames.add(language.name, language);
+                }
+            }
+            LanguageService.prototype.getAllLanguages = function () {
+                return this.languagesByNames.toArray();
+            };
+            LanguageService.prototype.getLanguageByName = function (name) {
+                if (!this.languagesByNames.contains(name))
+                    throw new RangeError("Could not get language. No language with name \"" + name + "\" found.");
+                return this.languagesByNames.get(name);
+            };
+            return LanguageService;
+        })();
+        Language.LanguageService = LanguageService;
+    })(Language = Code.Language || (Code.Language = {}));
+})(Code || (Code = {}));
+var Code;
+(function (Code) {
+    var View;
+    (function (View) {
+        var SegmentData = (function () {
+            function SegmentData(text, lexerHint, interpreterHint) {
+                this.text = text;
+                this.lexerHint = lexerHint;
+                this.interpreterHint = interpreterHint;
+            }
+            ;
+            return SegmentData;
+        })();
+        View.SegmentData = SegmentData;
+        var CodeContainer = (function () {
+            function CodeContainer(selection, language) {
+                this.segmentClickedEvent = new JPV.Event.Event();
+                this.selection = selection;
+                this.language = language;
+                this.initialize();
+            }
+            CodeContainer.prototype.initialize = function () {
+                var _this = this;
+                var text = this.selection.text();
+                text = text.substring(1, text.length - 2);
+                var lines = text.split('\n');
+                var rowCountHtml = "";
+                var minTabs = null;
+                for (var i = 0; i < lines.length; i++) {
+                    var line = lines[i];
+                    if (line.trim() == "") {
+                        continue;
+                    }
+                    rowCountHtml += i + "<br/>";
+                    var tabs = 0;
+                    for (var j = 0; j < line.length; j++) {
+                        if (line[j] == '\t') {
+                            tabs++;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    if (minTabs == null || tabs < minTabs) {
+                        minTabs = tabs;
+                    }
+                }
+                for (var i = 0; i < lines.length; i++) {
+                    lines[i] = lines[i].substring(minTabs, lines[i].length);
+                }
+                text = lines.join('\n');
+                var segments = this.language.getLexer().lex(text);
+                this.language.getInterpreter().interpret(segments);
+                var html = this.language.getFormatter().format(segments);
+                this.selection
+                    .addClass("clearfix")
+                    .text("");
+                this.leftSelection = $("<div>")
+                    .addClass("code-container-left")
+                    .appendTo(this.selection);
+                this.rightSelection = $("<div>")
+                    .addClass("code-container-right")
+                    .html(html)
+                    .appendTo(this.selection);
+                this.selection.on("click", ".segment", function () {
+                    var InterpreterHint = Code.Interpreter.InterpreterHint;
+                    var $segment = $(this);
+                    var lexerHint = parseInt($segment.data("lexer-hint"));
+                    var interpreterHint = parseInt($segment.data("interpreter-hint"));
+                    if (interpreterHint != InterpreterHint.NONE) {
+                        if (interpreterHint == InterpreterHint.TYPE) {
+                            alert("type");
+                        }
+                    }
+                    _this.segmentClickedEvent.trigger(this, new SegmentData($segment.text(), lexerHint, interpreterHint));
+                });
+            };
+            CodeContainer.prototype.setDisplayed = function (displayed) {
+                this.selection.css("display", displayed ? "" : "none");
+            };
+            return CodeContainer;
+        })();
+        View.CodeContainer = CodeContainer;
+    })(View = Code.View || (Code.View = {}));
+})(Code || (Code = {}));
+/// <reference path="CodeContainer" />
+var Code;
+(function (Code) {
+    var View;
+    (function (View) {
+        var MultiCodeBox = (function () {
+            function MultiCodeBox(selection, languageService) {
+                this.codeContainersByLanguageNames = new JPV.Collection.Map();
+                this.buttonsByLanguageNames = new JPV.Collection.Map();
+                this.selection = selection;
+                this.languageService = languageService;
+                this.initialize();
+            }
+            MultiCodeBox.prototype.initialize = function () {
+                var _this = this;
+                var $codeBoxHead = this.selection.find(".code-box-head");
+                var first = true;
+                this.selection.find(".code-container").each(function () {
+                    var $codeContainer = $(this);
+                    var languageName = $codeContainer.data("language");
+                    var language = _this.languageService.getLanguageByName(languageName);
+                    var codeContainer = new View.CodeContainer($codeContainer, language);
+                    codeContainer.setDisplayed(false);
+                    _this.codeContainersByLanguageNames.add(languageName, codeContainer);
+                    // JQuery does not get which .text i want to call
+                    var $button = $("<div>")
+                        .addClass("code-box-button")
+                        .text(languageName)
+                        .appendTo($codeBoxHead);
+                    _this.buttonsByLanguageNames.add(languageName, $button);
+                    $button.on("click", function () {
+                        var $clickedButton = $(this);
+                        var clickedButtonLanguageName = $button.text();
+                        // Set only the clicked button to 'pressed'
+                        _this.buttonsByLanguageNames.forEach(function ($button, languageName) {
+                            $button.toggleClass("pressed", languageName == clickedButtonLanguageName);
+                        });
+                        // Show only the code which belongs to the clicked button
+                        _this.codeContainersByLanguageNames.forEach(function (codeContainer, languageName) {
+                            codeContainer.setDisplayed(languageName == clickedButtonLanguageName);
+                        });
+                    });
+                });
+                this.buttonsByLanguageNames.toArray()[0].trigger("click");
+            };
+            return MultiCodeBox;
+        })();
+        View.MultiCodeBox = MultiCodeBox;
+    })(View = Code.View || (Code.View = {}));
+})(Code || (Code = {}));
+/// <reference path="../Code/Language/LanguageService" />
+/// <reference path="../Code/View/MultiCodeBox" />
+var Application;
+(function (Application_1) {
+    var Application = (function () {
+        function Application() {
+            this.languageService = new Code.Language.LanguageService();
+        }
+        Application.prototype.run = function () {
+            var _this = this;
+            $(".single-code-box").each(function () {
+                var $codeContainer = $(this).find(".code-container");
+                var languageName = $codeContainer.data("language");
+                var language = _this.languageService.getLanguageByName(languageName);
+                new Code.View.CodeContainer($codeContainer, language);
+            });
+            $(".multi-code-box").each(function () {
+                var $codeBox = $(this);
+                new Code.View.MultiCodeBox($codeBox, _this.languageService);
+            });
+        };
+        return Application;
+    })();
+    Application_1.Application = Application;
+})(Application || (Application = {}));
+/// <reference path="../../Common/CharCode" />
 /// <reference path="Segment" />
 var Code;
 (function (Code) {
     var Lexer;
     (function (Lexer) {
-        var StringLiteralFinder = (function () {
-            function StringLiteralFinder() {
+        var WordFinder = (function () {
+            function WordFinder() {
             }
-            StringLiteralFinder.prototype.find = function (stream) {
-                var delimiterChar = stream.peek();
-                if (delimiterChar != Common.CharCode.DOUBLE_QUOTE && delimiterChar != Common.CharCode.SINGLE_QUOTE)
+            WordFinder.prototype.find = function (stream) {
+                var firstChar = stream.peek();
+                if (!Common.CharCode.isLetter(firstChar) && firstChar != Common.CharCode.SCORE)
                     return null;
-                var chars = [stream.read()];
+                var chars = [];
                 for (var char = stream.read(); char != -1; char = stream.read()) {
                     chars.push(char);
-                    if (char == delimiterChar)
+                    var nextChar = stream.peek();
+                    if (!Common.CharCode.isAlphanumeric(nextChar) && nextChar != Common.CharCode.SCORE)
                         break;
                 }
-                return new Lexer.Segment(chars, Lexer.LexerHint.STRING);
+                return new Lexer.Segment(chars, Lexer.LexerHint.WORD);
             };
-            return StringLiteralFinder;
+            return WordFinder;
         })();
-        Lexer.StringLiteralFinder = StringLiteralFinder;
+        Lexer.WordFinder = WordFinder;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));

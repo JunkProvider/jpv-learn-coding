@@ -23,9 +23,9 @@ module Code.View
 			
 			const $codeBoxHead = this.selection.find(".code-box-head");
 			let first = true;
-			this.selection.find(".code-box-script").each(function() {
+			this.selection.find(".code-container").each(function() {
 				let $codeContainer = $(this);
-				let languageName = <string><any>$codeContainer.data("title");
+				let languageName = <string><any>$codeContainer.data("language");
 				let language = _this.languageService.getLanguageByName(languageName);
 				
 				let codeContainer = new CodeContainer($codeContainer, language);

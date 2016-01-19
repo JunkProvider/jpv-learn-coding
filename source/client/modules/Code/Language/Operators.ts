@@ -1,4 +1,4 @@
-module Application_Old
+module Code.Language
 {
 	export class Operators
 	{
@@ -30,7 +30,7 @@ module Application_Old
 		static PHP = Operators.BASIC.concat(["->"]);
 		
 		static JS = Operators.BASIC;
-		static TS = Operators.BASIC;
+		static TS = Operators.JS;
 		
 		static SH = [
 			"=",
