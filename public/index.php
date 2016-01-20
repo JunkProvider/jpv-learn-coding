@@ -2,4 +2,5 @@
 
 chdir(dirname(__DIR__));
 
-include '/../source/server/run.php';
+$run = implode(DIRECTORY_SEPARATOR, [ '', '..', 'source', 'server', 'run.php' ]);
+include $run;
