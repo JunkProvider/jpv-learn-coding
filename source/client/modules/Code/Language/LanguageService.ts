@@ -27,7 +27,6 @@ module Code.Language
 					[
 						"+=", "-=", "*=", "/=", "++", "--",
 						"==", "!=", "<=", ">=",
-						"===", "!==", "->",
 					],
 					Lexer.LexerHint.SPECIAL_CHAR
 				),
@@ -47,6 +46,7 @@ module Code.Language
 				keywordColors: {
 					"true": "#65B6CE",
 					"false": "#65B6CE",
+					"<?php": "red",
 				},
 				keywordTitles: {
 				},
@@ -54,6 +54,15 @@ module Code.Language
 				}
 			});
 			
+			{
+				const interpreter = new Interpreter.JavaInterpreter(
+					[],
+					[ '=', '+', '-', '*', '/', '^' ]
+				);
+				const language = new Language("math", lexer, interpreter, formatter);
+				this.languagesByNames.add(language.name, language);
+			}
+		
 			{
 				const interpreter = new Interpreter.JavaInterpreter(Keywords.JAVA, Operators.JAVA);
 				const language = new Language("java", lexer, interpreter, formatter);
@@ -65,6 +74,30 @@ module Code.Language
 				this.languagesByNames.add(language.name, language);
 			}
 			{
+				const lexer = new Lexer.Lexer([
+					Lexer.SequenceFinder.createFromStringArray(
+						[ "<?php", "&lsaquo;?php", "<?php" ], Lexer.LexerHint.STRING
+					),
+					new Lexer.MultiLineCommentFinder(),
+					new Lexer.SingleLineCommentFinder(),
+					new Lexer.StringLiteralFinder(),
+					new Lexer.NumberLiteralFinder(),
+					new Lexer.WordFinder(),
+					Lexer.SymbolFinder.createFromStringArray(
+						[' ', '\n', '\t'], Lexer.LexerHint.WHITESPACE
+					),
+					Lexer.SequenceFinder.createFromStringArray(
+						[
+							"+=", "-=", "*=", "/=", "++", "--",
+							"==", "!=", "<=", ">=",
+							"===", "!==", "->",
+						],
+						Lexer.LexerHint.SPECIAL_CHAR
+					),
+					Lexer.SymbolFinder.createFromString(
+						".;=+-*/&|!<>{}()[]$:", Lexer.LexerHint.SPECIAL_CHAR
+					),
+				]);
 				const interpreter = new Interpreter.JavaInterpreter(Keywords.PHP, Operators.PHP);
 				const language = new Language("php", lexer, interpreter, formatter);
 				this.languagesByNames.add(language.name, language);

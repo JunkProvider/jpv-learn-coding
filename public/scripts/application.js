@@ -1,3 +1,46 @@
+var Code;
+(function (Code) {
+    var Lexer;
+    (function (Lexer) {
+        var Stream = (function () {
+            function Stream(chars) {
+                this.index = 0;
+                this.chars = chars;
+                this.length = chars.length;
+                this.lastIndex = this.length - 1;
+            }
+            Stream.createFromString = function (value) {
+                var chars = [];
+                for (var i = 0; i < value.length; i++) {
+                    chars.push(value.charCodeAt(i));
+                }
+                return new Stream(chars);
+            };
+            Stream.prototype.eos = function () {
+                return this.index > this.lastIndex;
+            };
+            Stream.prototype.peek = function (offset) {
+                if (offset === void 0) { offset = 0; }
+                var index = this.index + offset;
+                if (index < 0 || index > this.lastIndex)
+                    return -1;
+                return this.chars[index];
+            };
+            Stream.prototype.read = function () {
+                if (this.index > this.lastIndex)
+                    return -1;
+                return this.chars[this.index++];
+            };
+            Stream.prototype.readMultiple = function (count) {
+                var start = this.index;
+                this.index += count;
+                return this.chars.slice(start, start + count);
+            };
+            return Stream;
+        })();
+        Lexer.Stream = Stream;
+    })(Lexer = Code.Lexer || (Code.Lexer = {}));
+})(Code || (Code = {}));
 var Common;
 (function (Common) {
     var CharCode = (function () {
@@ -141,248 +184,6 @@ var Code;
         Lexer.SingleLineCommentFinder = SingleLineCommentFinder;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="Segment" />
-var Code;
-(function (Code) {
-    var Lexer;
-    (function (Lexer) {
-        var SequenceFinder = (function () {
-            function SequenceFinder(searchedSequences, hint) {
-                this.searchedSequences = [];
-                this.searchedSequences = searchedSequences;
-                this.hint = hint;
-            }
-            SequenceFinder.createFromStringArray = function (texts, hint) {
-                var charCodes = [];
-                for (var _i = 0; _i < texts.length; _i++) {
-                    var text = texts[_i];
-                    var sequenceCharCodes = [];
-                    for (var i = 0; i < text.length; i++) {
-                        sequenceCharCodes.push(text.charCodeAt(i));
-                    }
-                    charCodes.push(sequenceCharCodes);
-                }
-                return new SequenceFinder(charCodes, hint);
-            };
-            SequenceFinder.prototype.find = function (stream) {
-                for (var _i = 0, _a = this.searchedSequences; _i < _a.length; _i++) {
-                    var searchedSequence = _a[_i];
-                    var segment = this.findSequence(stream, searchedSequence);
-                    if (segment != null)
-                        return segment;
-                }
-                return null;
-            };
-            SequenceFinder.prototype.findSequence = function (stream, sequence) {
-                for (var i = 0; i < sequence.length; i++) {
-                    if (stream.peek(i) != sequence[i])
-                        return null;
-                }
-                return new Lexer.Segment(stream.readMultiple(sequence.length), this.hint);
-            };
-            return SequenceFinder;
-        })();
-        Lexer.SequenceFinder = SequenceFinder;
-    })(Lexer = Code.Lexer || (Code.Lexer = {}));
-})(Code || (Code = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="Segment" />
-var Code;
-(function (Code) {
-    var Lexer;
-    (function (Lexer) {
-        var StringLiteralFinder = (function () {
-            function StringLiteralFinder() {
-            }
-            StringLiteralFinder.prototype.find = function (stream) {
-                var delimiterChar = stream.peek();
-                if (delimiterChar != Common.CharCode.DOUBLE_QUOTE && delimiterChar != Common.CharCode.SINGLE_QUOTE)
-                    return null;
-                var chars = [stream.read()];
-                for (var char = stream.read(); char != -1; char = stream.read()) {
-                    chars.push(char);
-                    if (char == delimiterChar)
-                        break;
-                }
-                return new Lexer.Segment(chars, Lexer.LexerHint.STRING);
-            };
-            return StringLiteralFinder;
-        })();
-        Lexer.StringLiteralFinder = StringLiteralFinder;
-    })(Lexer = Code.Lexer || (Code.Lexer = {}));
-})(Code || (Code = {}));
-var Code;
-(function (Code) {
-    var Language;
-    (function (Language) {
-        var Keywords = (function () {
-            function Keywords() {
-            }
-            Keywords.JAVA_AND_CS = [
-                "true",
-                "false",
-                "if",
-                "else",
-                "switch",
-                "case",
-                "default",
-                "for",
-                "foreach",
-                "in",
-                "public",
-                "protected",
-                "private",
-                "return",
-                "new",
-                "class",
-            ];
-            Keywords.JAVA = Keywords.JAVA_AND_CS;
-            Keywords.CS = Keywords.JAVA_AND_CS;
-            Keywords.PHP = [
-                "echo",
-                "true",
-                "false",
-                "if",
-                "else",
-                "switch",
-                "case",
-                "default",
-                "for",
-                "foreach",
-                "as",
-                "public",
-                "protected",
-                "private",
-                "function",
-                "return",
-                "new",
-                "class",
-            ];
-            Keywords.JS = [
-                "var",
-                "true",
-                "false",
-                "if",
-                "else",
-                "switch",
-                "case",
-                "default",
-                "for",
-                "in",
-                "function",
-                "return",
-                "new",
-            ];
-            Keywords.TS = [
-                "var",
-                "let",
-                "const",
-                "true",
-                "false",
-                "if",
-                "else",
-                "switch",
-                "case",
-                "default",
-                "for",
-                "in",
-                "of",
-                "public",
-                "protected",
-                "private",
-                "function",
-                "return",
-                "new",
-                "class",
-                "get",
-                "set",
-            ];
-            Keywords.SH = [
-                "echo",
-                "if",
-                "then",
-                "else",
-                "fi",
-                "while",
-                "do",
-                "done",
-            ];
-            Keywords.JASS = [
-                "local",
-                "array",
-                "set",
-                "true",
-                "false",
-                "if",
-                "then",
-                "else",
-                "endif",
-                "loop",
-                "exitwhen",
-                "endloop",
-                "call",
-                "function",
-                "takes",
-                "returns",
-                "return",
-                "endfunction",
-                "public",
-                "private",
-                "static",
-                "struct",
-                "method",
-                "endmethod",
-            ];
-            return Keywords;
-        })();
-        Language.Keywords = Keywords;
-    })(Language = Code.Language || (Code.Language = {}));
-})(Code || (Code = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="Segment" />
-var Code;
-(function (Code) {
-    var Lexer;
-    (function (Lexer) {
-        var SymbolFinder = (function () {
-            function SymbolFinder(searchedChars, hint) {
-                this.searchedChars = [];
-                this.searchedChars = searchedChars;
-                this.hint = hint;
-            }
-            SymbolFinder.createFromString = function (chars, hint) {
-                var charCodes = [];
-                for (var i = 0; i < chars.length; i++) {
-                    charCodes.push(chars.charCodeAt(i));
-                }
-                return new SymbolFinder(charCodes, hint);
-            };
-            SymbolFinder.createFromStringArray = function (chars, hint) {
-                var charCodes = [];
-                for (var _i = 0; _i < chars.length; _i++) {
-                    var char = chars[_i];
-                    if (char.length != 1)
-                        throw new Error("Each string must be a single char!");
-                    charCodes.push(char.charCodeAt(0));
-                }
-                return new SymbolFinder(charCodes, hint);
-            };
-            SymbolFinder.prototype.find = function (stream) {
-                var char = stream.peek();
-                var searchedChars = this.searchedChars;
-                for (var i = 0, len = searchedChars.length; i < len; i++) {
-                    if (char == searchedChars[i]) {
-                        return new Lexer.Segment([stream.read()], this.hint);
-                    }
-                }
-                return null;
-            };
-            return SymbolFinder;
-        })();
-        Lexer.SymbolFinder = SymbolFinder;
-    })(Lexer = Code.Lexer || (Code.Lexer = {}));
-})(Code || (Code = {}));
 var Code;
 (function (Code) {
     var Interpreter;
@@ -398,137 +199,6 @@ var Code;
         })(Interpreter.InterpreterHint || (Interpreter.InterpreterHint = {}));
         var InterpreterHint = Interpreter.InterpreterHint;
     })(Interpreter = Code.Interpreter || (Code.Interpreter = {}));
-})(Code || (Code = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="../Lexer/LexerHint" />
-/// <reference path="InterpreterHint" />
-var Code;
-(function (Code) {
-    var Interpreter;
-    (function (Interpreter) {
-        var JavaInterpreter = (function () {
-            function JavaInterpreter(keywords, operators) {
-                this.keywords = JPV.Collection.Map.createFromArray(keywords, function (keyword) { return keyword; });
-                this.operators = JPV.Collection.Map.createFromArray(operators, function (operator) { return operator; });
-            }
-            JavaInterpreter.prototype.interpret = function (segments) {
-                for (var _i = 0; _i < segments.length; _i++) {
-                    var segment = segments[_i];
-                    if (segment.lexerHint == Code.Lexer.LexerHint.WORD) {
-                        segment.interpreterHint = this.interpretWord(segment);
-                        continue;
-                    }
-                    if (segment.lexerHint == Code.Lexer.LexerHint.SPECIAL_CHAR) {
-                        segment.interpreterHint = this.interpretSpecialChar(segment);
-                        continue;
-                    }
-                }
-            };
-            JavaInterpreter.prototype.interpretSpecialChar = function (segment) {
-                var text = segment.text;
-                if (this.operators.contains(text))
-                    return Interpreter.InterpreterHint.OPERATOR;
-                return Interpreter.InterpreterHint.SPECIAL_CHAR;
-            };
-            JavaInterpreter.prototype.interpretWord = function (segment) {
-                var text = segment.text;
-                if (this.keywords.contains(text)) {
-                    return Interpreter.InterpreterHint.KEYWORD;
-                }
-                var prev = segment.getPrevRelevant();
-                var prevText = prev != null ? prev.text : "";
-                var prevHint = prev != null ? prev.lexerHint : Code.Lexer.LexerHint.NONE;
-                var next = segment.getNextRelevant();
-                var nextText = next != null ? next.text : "";
-                var nextHint = next != null ? next.lexerHint : Code.Lexer.LexerHint.NONE;
-                if (prevText == "new")
-                    return Interpreter.InterpreterHint.TYPE;
-                if (nextHint == Code.Lexer.LexerHint.WORD)
-                    return Interpreter.InterpreterHint.TYPE;
-                if (nextText == '(')
-                    return Interpreter.InterpreterHint.FUNCTION;
-                if (nextText == '[') {
-                    var nextButOne = next.getNextRelevant();
-                    if (nextButOne != null && nextButOne.text == ']')
-                        return Interpreter.InterpreterHint.TYPE;
-                }
-                if (Common.CharCode.isUpperCase(segment.chars[0]))
-                    return Interpreter.InterpreterHint.TYPE;
-                return Interpreter.InterpreterHint.VARIABLE;
-            };
-            return JavaInterpreter;
-        })();
-        Interpreter.JavaInterpreter = JavaInterpreter;
-    })(Interpreter = Code.Interpreter || (Code.Interpreter = {}));
-})(Code || (Code = {}));
-/// <reference path="../../Common/CharCode" />
-/// <reference path="Segment" />
-var Code;
-(function (Code) {
-    var Lexer;
-    (function (Lexer) {
-        var NumberLiteralFinder = (function () {
-            function NumberLiteralFinder() {
-            }
-            NumberLiteralFinder.prototype.find = function (stream) {
-                var firstChar = stream.peek();
-                if (!Common.CharCode.isNumber(firstChar))
-                    return null;
-                var chars = [];
-                for (var char = stream.read(); char != -1; char = stream.read()) {
-                    chars.push(char);
-                    var nextChar = stream.peek();
-                    if (!Common.CharCode.isNumber(nextChar) && nextChar != Common.CharCode.DOT && nextChar != Common.CharCode.f)
-                        break;
-                }
-                return new Lexer.Segment(chars, Lexer.LexerHint.NUMBER);
-            };
-            return NumberLiteralFinder;
-        })();
-        Lexer.NumberLiteralFinder = NumberLiteralFinder;
-    })(Lexer = Code.Lexer || (Code.Lexer = {}));
-})(Code || (Code = {}));
-/// <reference path="Segment" />
-/// <reference path="LexerHint" />
-var Code;
-(function (Code) {
-    var Lexer;
-    (function (Lexer_1) {
-        var Lexer = (function () {
-            function Lexer(segmentFinders) {
-                this.segmentFinders = [];
-                this.segmentFinders = segmentFinders;
-            }
-            Lexer.prototype.lex = function (text) {
-                var stream = Lexer_1.Stream.createFromString(text);
-                var segments = [];
-                while (!stream.eos()) {
-                    var segment = this.findSegment(stream);
-                    if (segment == null)
-                        segment = new Lexer_1.Segment([stream.read()], Lexer_1.LexerHint.NONE);
-                    if (segments.length != 0) {
-                        var prevSibling = segments[segments.length - 1];
-                        prevSibling.nextSibling = segment;
-                        segment.prevSibling = prevSibling;
-                    }
-                    segments.push(segment);
-                }
-                return segments;
-            };
-            Lexer.prototype.findSegment = function (stream) {
-                for (var _i = 0, _a = this.segmentFinders; _i < _a.length; _i++) {
-                    var finder = _a[_i];
-                    var segment = finder.find(stream);
-                    if (segment != null) {
-                        return segment;
-                    }
-                }
-                return null;
-            };
-            return Lexer;
-        })();
-        Lexer_1.Lexer = Lexer;
-    })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));
 /// <reference path="../../Common/CharCode" />
 /// <reference path="../Lexer/LexerHint" />
@@ -643,47 +313,264 @@ var Code;
         Formatter.JavaFormatter = JavaFormatter;
     })(Formatter = Code.Formatter || (Code.Formatter = {}));
 })(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="Segment" />
 var Code;
 (function (Code) {
     var Lexer;
     (function (Lexer) {
-        var Stream = (function () {
-            function Stream(chars) {
-                this.index = 0;
-                this.chars = chars;
-                this.length = chars.length;
-                this.lastIndex = this.length - 1;
+        var WordFinder = (function () {
+            function WordFinder() {
             }
-            Stream.createFromString = function (value) {
+            WordFinder.prototype.find = function (stream) {
+                var firstChar = stream.peek();
+                if (!Common.CharCode.isLetter(firstChar) && firstChar != Common.CharCode.SCORE)
+                    return null;
                 var chars = [];
-                for (var i = 0; i < value.length; i++) {
-                    chars.push(value.charCodeAt(i));
+                for (var char = stream.read(); char != -1; char = stream.read()) {
+                    chars.push(char);
+                    var nextChar = stream.peek();
+                    if (!Common.CharCode.isAlphanumeric(nextChar) && nextChar != Common.CharCode.SCORE)
+                        break;
                 }
-                return new Stream(chars);
+                return new Lexer.Segment(chars, Lexer.LexerHint.WORD);
             };
-            Stream.prototype.eos = function () {
-                return this.index > this.lastIndex;
-            };
-            Stream.prototype.peek = function (offset) {
-                if (offset === void 0) { offset = 0; }
-                var index = this.index + offset;
-                if (index < 0 || index > this.lastIndex)
-                    return -1;
-                return this.chars[index];
-            };
-            Stream.prototype.read = function () {
-                if (this.index > this.lastIndex)
-                    return -1;
-                return this.chars[this.index++];
-            };
-            Stream.prototype.readMultiple = function (count) {
-                var start = this.index;
-                this.index += count;
-                return this.chars.slice(start, start + count);
-            };
-            return Stream;
+            return WordFinder;
         })();
-        Lexer.Stream = Stream;
+        Lexer.WordFinder = WordFinder;
+    })(Lexer = Code.Lexer || (Code.Lexer = {}));
+})(Code || (Code = {}));
+var Code;
+(function (Code) {
+    var Language;
+    (function (Language) {
+        var Keywords = (function () {
+            function Keywords() {
+            }
+            Keywords.JAVA_AND_CS = [
+                "true",
+                "false",
+                "if",
+                "else",
+                "switch",
+                "case",
+                "default",
+                "for",
+                "foreach",
+                "in",
+                "public",
+                "protected",
+                "private",
+                "static",
+                "return",
+                "new",
+                "class",
+            ];
+            Keywords.JAVA = Keywords.JAVA_AND_CS;
+            Keywords.CS = Keywords.JAVA_AND_CS;
+            Keywords.PHP = [
+                "<?php",
+                "echo",
+                "true",
+                "false",
+                "if",
+                "else",
+                "switch",
+                "case",
+                "default",
+                "for",
+                "foreach",
+                "as",
+                "public",
+                "protected",
+                "private",
+                "function",
+                "return",
+                "new",
+                "class",
+            ];
+            Keywords.JS = [
+                "var",
+                "true",
+                "false",
+                "if",
+                "else",
+                "switch",
+                "case",
+                "default",
+                "for",
+                "in",
+                "function",
+                "return",
+                "new",
+            ];
+            Keywords.TS = [
+                "var",
+                "let",
+                "const",
+                "true",
+                "false",
+                "if",
+                "else",
+                "switch",
+                "case",
+                "default",
+                "for",
+                "in",
+                "of",
+                "public",
+                "protected",
+                "private",
+                "function",
+                "return",
+                "new",
+                "class",
+                "get",
+                "set",
+            ];
+            Keywords.SH = [
+                "echo",
+                "if",
+                "then",
+                "else",
+                "fi",
+                "while",
+                "do",
+                "done",
+            ];
+            Keywords.JASS = [
+                "local",
+                "array",
+                "set",
+                "true",
+                "false",
+                "if",
+                "then",
+                "else",
+                "endif",
+                "loop",
+                "exitwhen",
+                "endloop",
+                "call",
+                "function",
+                "takes",
+                "returns",
+                "return",
+                "endfunction",
+                "public",
+                "private",
+                "static",
+                "struct",
+                "method",
+                "endmethod",
+            ];
+            return Keywords;
+        })();
+        Language.Keywords = Keywords;
+    })(Language = Code.Language || (Code.Language = {}));
+})(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="../Lexer/LexerHint" />
+/// <reference path="InterpreterHint" />
+var Code;
+(function (Code) {
+    var Interpreter;
+    (function (Interpreter) {
+        var JavaInterpreter = (function () {
+            function JavaInterpreter(keywords, operators) {
+                this.keywords = JPV.Collection.Map.createFromArray(keywords, function (keyword) { return keyword; });
+                this.operators = JPV.Collection.Map.createFromArray(operators, function (operator) { return operator; });
+            }
+            JavaInterpreter.prototype.interpret = function (segments) {
+                for (var _i = 0; _i < segments.length; _i++) {
+                    var segment = segments[_i];
+                    if (segment.lexerHint == Code.Lexer.LexerHint.WORD) {
+                        segment.interpreterHint = this.interpretWord(segment);
+                        continue;
+                    }
+                    if (segment.lexerHint == Code.Lexer.LexerHint.SPECIAL_CHAR) {
+                        segment.interpreterHint = this.interpretSpecialChar(segment);
+                        continue;
+                    }
+                }
+            };
+            JavaInterpreter.prototype.interpretSpecialChar = function (segment) {
+                var text = segment.text;
+                if (this.operators.contains(text))
+                    return Interpreter.InterpreterHint.OPERATOR;
+                return Interpreter.InterpreterHint.SPECIAL_CHAR;
+            };
+            JavaInterpreter.prototype.interpretWord = function (segment) {
+                var text = segment.text;
+                if (this.keywords.contains(text)) {
+                    return Interpreter.InterpreterHint.KEYWORD;
+                }
+                var prev = segment.getPrevRelevant();
+                var prevText = prev != null ? prev.text : "";
+                var prevHint = prev != null ? prev.lexerHint : Code.Lexer.LexerHint.NONE;
+                var next = segment.getNextRelevant();
+                var nextText = next != null ? next.text : "";
+                var nextHint = next != null ? next.lexerHint : Code.Lexer.LexerHint.NONE;
+                if (prevText == "new")
+                    return Interpreter.InterpreterHint.TYPE;
+                if (nextHint == Code.Lexer.LexerHint.WORD)
+                    return Interpreter.InterpreterHint.TYPE;
+                if (nextText == '(')
+                    return Interpreter.InterpreterHint.FUNCTION;
+                if (nextText == '[') {
+                    var nextButOne = next.getNextRelevant();
+                    if (nextButOne != null && nextButOne.text == ']')
+                        return Interpreter.InterpreterHint.TYPE;
+                }
+                if (Common.CharCode.isUpperCase(segment.chars[0]))
+                    return Interpreter.InterpreterHint.TYPE;
+                return Interpreter.InterpreterHint.VARIABLE;
+            };
+            return JavaInterpreter;
+        })();
+        Interpreter.JavaInterpreter = JavaInterpreter;
+    })(Interpreter = Code.Interpreter || (Code.Interpreter = {}));
+})(Code || (Code = {}));
+/// <reference path="Segment" />
+/// <reference path="LexerHint" />
+var Code;
+(function (Code) {
+    var Lexer;
+    (function (Lexer_1) {
+        var Lexer = (function () {
+            function Lexer(segmentFinders) {
+                this.segmentFinders = [];
+                this.segmentFinders = segmentFinders;
+            }
+            Lexer.prototype.lex = function (text) {
+                var stream = Lexer_1.Stream.createFromString(text);
+                var segments = [];
+                while (!stream.eos()) {
+                    var segment = this.findSegment(stream);
+                    if (segment == null)
+                        segment = new Lexer_1.Segment([stream.read()], Lexer_1.LexerHint.NONE);
+                    if (segments.length != 0) {
+                        var prevSibling = segments[segments.length - 1];
+                        prevSibling.nextSibling = segment;
+                        segment.prevSibling = prevSibling;
+                    }
+                    segments.push(segment);
+                }
+                return segments;
+            };
+            Lexer.prototype.findSegment = function (stream) {
+                for (var _i = 0, _a = this.segmentFinders; _i < _a.length; _i++) {
+                    var finder = _a[_i];
+                    var segment = finder.find(stream);
+                    if (segment != null) {
+                        return segment;
+                    }
+                }
+                return null;
+            };
+            return Lexer;
+        })();
+        Lexer_1.Lexer = Lexer;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));
 /// <reference path="../../Common/CharCode" />
@@ -692,23 +579,69 @@ var Code;
 (function (Code) {
     var Lexer;
     (function (Lexer) {
-        var MultiLineCommentFinder = (function () {
-            function MultiLineCommentFinder() {
+        var SymbolFinder = (function () {
+            function SymbolFinder(searchedChars, hint) {
+                this.searchedChars = [];
+                this.searchedChars = searchedChars;
+                this.hint = hint;
             }
-            MultiLineCommentFinder.prototype.find = function (stream) {
-                if (stream.peek() != Common.CharCode.SLASH || stream.peek(1) != Common.CharCode.ASTERISK)
+            SymbolFinder.createFromString = function (chars, hint) {
+                var charCodes = [];
+                for (var i = 0; i < chars.length; i++) {
+                    charCodes.push(chars.charCodeAt(i));
+                }
+                return new SymbolFinder(charCodes, hint);
+            };
+            SymbolFinder.createFromStringArray = function (chars, hint) {
+                var charCodes = [];
+                for (var _i = 0; _i < chars.length; _i++) {
+                    var char = chars[_i];
+                    if (char.length != 1)
+                        throw new Error("Each string must be a single char!");
+                    charCodes.push(char.charCodeAt(0));
+                }
+                return new SymbolFinder(charCodes, hint);
+            };
+            SymbolFinder.prototype.find = function (stream) {
+                var char = stream.peek();
+                var searchedChars = this.searchedChars;
+                for (var i = 0, len = searchedChars.length; i < len; i++) {
+                    if (char == searchedChars[i]) {
+                        return new Lexer.Segment([stream.read()], this.hint);
+                    }
+                }
+                return null;
+            };
+            return SymbolFinder;
+        })();
+        Lexer.SymbolFinder = SymbolFinder;
+    })(Lexer = Code.Lexer || (Code.Lexer = {}));
+})(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="Segment" />
+var Code;
+(function (Code) {
+    var Lexer;
+    (function (Lexer) {
+        var NumberLiteralFinder = (function () {
+            function NumberLiteralFinder() {
+            }
+            NumberLiteralFinder.prototype.find = function (stream) {
+                var firstChar = stream.peek();
+                if (!Common.CharCode.isNumber(firstChar))
                     return null;
-                var chars = [stream.read()];
+                var chars = [];
                 for (var char = stream.read(); char != -1; char = stream.read()) {
                     chars.push(char);
-                    if (char == Common.CharCode.SLASH && stream.peek(-2) == Common.CharCode.ASTERISK)
+                    var nextChar = stream.peek();
+                    if (!Common.CharCode.isNumber(nextChar) && nextChar != Common.CharCode.DOT && nextChar != Common.CharCode.f)
                         break;
                 }
-                return new Lexer.Segment(chars, Lexer.LexerHint.COMMENT);
+                return new Lexer.Segment(chars, Lexer.LexerHint.NUMBER);
             };
-            return MultiLineCommentFinder;
+            return NumberLiteralFinder;
         })();
-        Lexer.MultiLineCommentFinder = MultiLineCommentFinder;
+        Lexer.NumberLiteralFinder = NumberLiteralFinder;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));
 /// <reference path="../../Common/CharCode" />
@@ -882,7 +815,6 @@ var Code;
                     Code.Lexer.SequenceFinder.createFromStringArray([
                         "+=", "-=", "*=", "/=", "++", "--",
                         "==", "!=", "<=", ">=",
-                        "===", "!==", "->",
                     ], Code.Lexer.LexerHint.SPECIAL_CHAR),
                     Code.Lexer.SymbolFinder.createFromString(".;=+-*/&|!<>{}()[]$:", Code.Lexer.LexerHint.SPECIAL_CHAR),
                 ]);
@@ -897,10 +829,16 @@ var Code;
                     keywordColors: {
                         "true": "#65B6CE",
                         "false": "#65B6CE",
+                        "<?php": "red",
                     },
                     keywordTitles: {},
                     specialCharTitles: {}
                 });
+                {
+                    var interpreter = new Code.Interpreter.JavaInterpreter([], ['=', '+', '-', '*', '/', '^']);
+                    var language = new Language.Language("math", lexer, interpreter, formatter);
+                    this.languagesByNames.add(language.name, language);
+                }
                 {
                     var interpreter = new Code.Interpreter.JavaInterpreter(Language.Keywords.JAVA, Language.Operators.JAVA);
                     var language = new Language.Language("java", lexer, interpreter, formatter);
@@ -912,8 +850,23 @@ var Code;
                     this.languagesByNames.add(language.name, language);
                 }
                 {
+                    var lexer_1 = new Code.Lexer.Lexer([
+                        Code.Lexer.SequenceFinder.createFromStringArray(["<?php", "&lsaquo;?php", "<?php"], Code.Lexer.LexerHint.STRING),
+                        new Code.Lexer.MultiLineCommentFinder(),
+                        new Code.Lexer.SingleLineCommentFinder(),
+                        new Code.Lexer.StringLiteralFinder(),
+                        new Code.Lexer.NumberLiteralFinder(),
+                        new Code.Lexer.WordFinder(),
+                        Code.Lexer.SymbolFinder.createFromStringArray([' ', '\n', '\t'], Code.Lexer.LexerHint.WHITESPACE),
+                        Code.Lexer.SequenceFinder.createFromStringArray([
+                            "+=", "-=", "*=", "/=", "++", "--",
+                            "==", "!=", "<=", ">=",
+                            "===", "!==", "->",
+                        ], Code.Lexer.LexerHint.SPECIAL_CHAR),
+                        Code.Lexer.SymbolFinder.createFromString(".;=+-*/&|!<>{}()[]$:", Code.Lexer.LexerHint.SPECIAL_CHAR),
+                    ]);
                     var interpreter = new Code.Interpreter.JavaInterpreter(Language.Keywords.PHP, Language.Operators.PHP);
-                    var language = new Language.Language("php", lexer, interpreter, formatter);
+                    var language = new Language.Language("php", lexer_1, interpreter, formatter);
                     this.languagesByNames.add(language.name, language);
                 }
                 {
@@ -1116,24 +1069,93 @@ var Code;
 (function (Code) {
     var Lexer;
     (function (Lexer) {
-        var WordFinder = (function () {
-            function WordFinder() {
+        var MultiLineCommentFinder = (function () {
+            function MultiLineCommentFinder() {
             }
-            WordFinder.prototype.find = function (stream) {
-                var firstChar = stream.peek();
-                if (!Common.CharCode.isLetter(firstChar) && firstChar != Common.CharCode.SCORE)
+            MultiLineCommentFinder.prototype.find = function (stream) {
+                if (stream.peek() != Common.CharCode.SLASH || stream.peek(1) != Common.CharCode.ASTERISK)
                     return null;
-                var chars = [];
+                var chars = [stream.read()];
                 for (var char = stream.read(); char != -1; char = stream.read()) {
                     chars.push(char);
-                    var nextChar = stream.peek();
-                    if (!Common.CharCode.isAlphanumeric(nextChar) && nextChar != Common.CharCode.SCORE)
+                    if (char == Common.CharCode.SLASH && stream.peek(-2) == Common.CharCode.ASTERISK)
                         break;
                 }
-                return new Lexer.Segment(chars, Lexer.LexerHint.WORD);
+                return new Lexer.Segment(chars, Lexer.LexerHint.COMMENT);
             };
-            return WordFinder;
+            return MultiLineCommentFinder;
         })();
-        Lexer.WordFinder = WordFinder;
+        Lexer.MultiLineCommentFinder = MultiLineCommentFinder;
+    })(Lexer = Code.Lexer || (Code.Lexer = {}));
+})(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="Segment" />
+var Code;
+(function (Code) {
+    var Lexer;
+    (function (Lexer) {
+        var StringLiteralFinder = (function () {
+            function StringLiteralFinder() {
+            }
+            StringLiteralFinder.prototype.find = function (stream) {
+                var delimiterChar = stream.peek();
+                if (delimiterChar != Common.CharCode.DOUBLE_QUOTE && delimiterChar != Common.CharCode.SINGLE_QUOTE)
+                    return null;
+                var chars = [stream.read()];
+                for (var char = stream.read(); char != -1; char = stream.read()) {
+                    chars.push(char);
+                    if (char == delimiterChar)
+                        break;
+                }
+                return new Lexer.Segment(chars, Lexer.LexerHint.STRING);
+            };
+            return StringLiteralFinder;
+        })();
+        Lexer.StringLiteralFinder = StringLiteralFinder;
+    })(Lexer = Code.Lexer || (Code.Lexer = {}));
+})(Code || (Code = {}));
+/// <reference path="../../Common/CharCode" />
+/// <reference path="Segment" />
+var Code;
+(function (Code) {
+    var Lexer;
+    (function (Lexer) {
+        var SequenceFinder = (function () {
+            function SequenceFinder(searchedSequences, hint) {
+                this.searchedSequences = [];
+                this.searchedSequences = searchedSequences;
+                this.hint = hint;
+            }
+            SequenceFinder.createFromStringArray = function (texts, hint) {
+                var charCodes = [];
+                for (var _i = 0; _i < texts.length; _i++) {
+                    var text = texts[_i];
+                    var sequenceCharCodes = [];
+                    for (var i = 0; i < text.length; i++) {
+                        sequenceCharCodes.push(text.charCodeAt(i));
+                    }
+                    charCodes.push(sequenceCharCodes);
+                }
+                return new SequenceFinder(charCodes, hint);
+            };
+            SequenceFinder.prototype.find = function (stream) {
+                for (var _i = 0, _a = this.searchedSequences; _i < _a.length; _i++) {
+                    var searchedSequence = _a[_i];
+                    var segment = this.findSequence(stream, searchedSequence);
+                    if (segment != null)
+                        return segment;
+                }
+                return null;
+            };
+            SequenceFinder.prototype.findSequence = function (stream, sequence) {
+                for (var i = 0; i < sequence.length; i++) {
+                    if (stream.peek(i) != sequence[i])
+                        return null;
+                }
+                return new Lexer.Segment(stream.readMultiple(sequence.length), this.hint);
+            };
+            return SequenceFinder;
+        })();
+        Lexer.SequenceFinder = SequenceFinder;
     })(Lexer = Code.Lexer || (Code.Lexer = {}));
 })(Code || (Code = {}));

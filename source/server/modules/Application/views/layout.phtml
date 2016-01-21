@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * @version    SVN: $Id$
+ * @author     Nico Englert <junkProvider@outlook.com>
+ * @copyright  Nico Englert <junkProvider@outlook.com>
+ *
+ * @var $this  \JPV\View\Renderer
+ * @var $model array
+ */
+
+?>
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Learn Coding</title>
+		<link rel="icon" type="image/png" href="images/favicon.png" />
+		<link rel="stylesheet" type="text/css" href="styles/style.css" />
+		<script type="text/javascript" src="scripts/jquery.js" ></script>
+		<script type="text/javascript" src="scripts/jpv.js" ></script>
+		<script type="text/javascript" src="scripts/application.js" ></script>
+	</head>
+	<body>
+		<h1>Learn Coding</h1>
+		<div class="menu clearfix">
+			<?php
+				/**
+				 * @param \Application\Navigation\MenuItem $menuItem
+				 */
+				function printMenuItem($menuItem)
+				{
+					echo '<div class="menu-item">';
+					echo '<a class="menu-item-button" href="?view=' . $menuItem->getId() . '">' . $menuItem->getText() . '</a>';
+					if ($menuItem->hasChildren())
+					{
+						echo '<div class="menu-item-children">';
+						/**
+						 * @var $subMenuItem \Application\Navigation\MenuItem
+						 */
+						foreach ($menuItem->getChildren() as $subMenuItem)
+						{
+							printMenuItem($subMenuItem);
+						}
+						echo '</div>';
+					}
+					echo '</div>';
+				}
+
+				foreach ($model['menu']->getItems() as $menuItem)
+				{
+					printMenuItem($menuItem);
+				}
+			?>
+		</div>
+		<div class="page-content">
+			<?php echo $model['content']; ?>
+		</div>
+		<script type="text/javascript">
+			var app = new Application.Application();
+			app.run();
+		</script>
+	</body>
+</html>

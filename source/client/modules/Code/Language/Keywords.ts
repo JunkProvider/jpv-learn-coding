@@ -16,6 +16,7 @@ module Code.Language
 			"public",
 			"protected",
 			"private",
+			"static",
 			"return",
 			"new",
 			"class",
@@ -25,6 +26,7 @@ module Code.Language
 		static CS = Keywords.JAVA_AND_CS;
 		
 		static PHP = [
+			"<?php",
 			"echo",
 			"true",
 			"false",

@@ -1,0 +1,494 @@
+<?php
+
+class Highlighter
+{
+	public function variable($text)
+	{
+		echo $this->custom($text, '#FFA500');
+	}
+
+	public function constant($text)
+	{
+		echo $this->custom($text, '#65B6CE');
+	}
+
+	public function type($text)
+	{
+		echo $this->custom($text, '#A67DE0');
+	}
+
+	public function important($text)
+	{
+		echo $this->custom($text, 'red');
+	}
+
+	public function custom($text, $color)
+	{
+		echo '<span style="color: ' . $color . ';">' . $text . '</span>';
+	}
+}
+
+$highlight = new Highlighter();
+
+?>
+
+<h2>Variablen</h2>
+
+<h3>Was sind Variablen?</h3>
+
+Das Woret Variable kommt vom Wort "variabel", das heist so viel wie "veränderlich".<br/>
+Das Gegenteil einer Variable wäre eine Konstante, welche konstant ist und daher nicht
+verändert werden kann.<br/>
+<br/>
+Auch den jenigen, die noch nie programmiert haben, sind Variablen bestimmt schon einmal
+in irgend einer Form begegnet.<br/>
+Denn Variablen gibt es nicht nur in der Programmierung.<br/>
+<br/>
+Unter anderem findet man Variablen in der Mathematik, hier sind zum Beispiel welche:
+
+<div class="single-code-box">
+	<div class="code-container" data-language="math">
+		y = 0.5 * x + 5
+	</div>
+</div>
+
+Dieser Ausdruck definiert nur, dass <?php $highlight->variable('y'); ?> die Hälfte von <?php $highlight->variable('x'); ?> plus <?php $highlight->constant('5'); ?> ist.
+Kennen wir jetzt den Wert von <?php $highlight->variable('x'); ?>, so können wir den Wert von <?php $highlight->variable('y'); ?> errechnen, oder andersrum
+wenn wir die Formel umstellen.<br/>
+Variablen sind hier also eine Art Platzhalter für echte Werte.
+
+<div class="single-code-box">
+	<div class="code-container" data-language="math">
+		x = 2
+		y = 0.5 * x + 5 = 6
+	</div>
+</div>
+
+Folgender Ausdruck wäre schlicht FALSCH:
+
+<div class="single-code-box">
+	<div class="code-container" data-language="math">
+		x = 2
+		x = 3
+	</div>
+</div>
+
+<?php $highlight->variable('x'); ?> Kann nicht gleichzeitig <?php $highlight->constant('2'); ?> und <?php $highlight->constant('3'); ?> sein, da die Mathematik keinen Zustand hat, sondern nur einen Beschreibt.<br/>
+In einem Programm ginge das, hier wäre <?php $highlight->variable('x'); ?> erst <?php $highlight->constant('2'); ?> und dann <?php $highlight->constant('3'); ?>, da der Code von oben nach unten durchlaufen wird.<br/>
+<br/>
+Den Wert einer Variable setzen nennt man übrigens eine <?php $highlight->important('Zuweisung'); ?>.
+Bei einer Zuweisung wird immer nur die Variable auf der linken seite des = verändert, Variablen auf der rechten seite, werden nur ausgelesen aber nicht verändert.
+
+<div class="single-code-box">
+	<div class="code-container" data-language="math">
+		y = 2
+		x = y
+	</div>
+</div>
+
+<?php $highlight->variable('x'); ?> wäre am Ende <?php $highlight->constant('2'); ?>.
+
+<div class="single-code-box">
+	<div class="code-container" data-language="math">
+		y = 2
+		x = y - 1
+	</div>
+</div>
+
+<?php $highlight->variable('x'); ?> wäre am Ende <?php $highlight->constant('1'); ?>.
+
+<div class="single-code-box">
+	<div class="code-container" data-language="math">
+		x = 2
+		x = x * x
+	</div>
+</div>
+
+<?php $highlight->variable('x'); ?> wäre am Ende <?php $highlight->constant('4'); ?>, da es erst auf
+<?php $highlight->constant('2'); ?> gesetzt und dann zu
+sich selbst mal sich selbst gesetzt wird.
+
+<div class="single-code-box">
+	<div class="code-container" data-language="math">
+		x = 5.5
+		y = x
+		x = 10
+	</div>
+</div>
+
+<?php $highlight->variable('x'); ?> wäre am Ende <?php $highlight->constant('10'); ?>, da zwar ein
+anderer Wert gesetzt wurde, dieser aber später wieder überschrieben wird.
+<?php $highlight->variable('y'); ?> wäre <?php $highlight->constant('5.5'); ?>, da der Wert von <?php $highlight->variable('y'); ?> schon zu dem von <?php $highlight->variable('x'); ?> gesetzt wurde als der von <?php $highlight->variable('x'); ?> noch <?php $highlight->constant('5.5'); ?> war.<br/>
+<br/>
+
+Das Setzen von Variablen sieht in den verschiedenen Programmiersprachen etwas anders aus, als in
+der Mathematik. Hier das letzte Beispiel in verschiedenen Sprachen.
+
+<div class="multi-code-box">
+	<div class="code-box-head clearfix">
+	</div>
+	<div class="code-box-body">
+		<div class="code-container" data-language="java">
+			float x = 5.5f;
+			float y = x;
+			x = 10f;
+		</div>
+		<div class="code-container" data-language="c#">
+			float x = 5.5f;
+			float y = x;
+			x = 10f;
+		</div>
+		<div class="code-container" data-language="php">
+			$x = 5.5;
+			$y = $x;
+			$x = 10;
+		</div>
+		<div class="code-container" data-language="js">
+			var x = 5.5;
+			var y = x;
+			x = 10;
+		</div>
+		<div class="code-container" data-language="ts">
+			let x = 5.5;
+			let y = x;
+			x = 10;
+		</div>
+		<div class="code-container" data-language="jass">
+			local real x = 5.5
+			local real y = x
+			set x = 10
+		</div>
+	</div>
+</div>
+
+Das sieht nun aber doch ganz anders aus...<br/>
+Das sind jetzt aber nur ein par Beispiel-Sprachen, es gibt noch viel viel mehr.<br/>
+<br/>
+Da alle Sprachen im Prinzip ähnlich aber doch verschieden sind, kann ich hier nicht jeden Sprache erklären.<br/>
+Wir beschränken uns auf Java und PHP, das dies die Sprachen sind welche meist in Schulen gelehrt werden.<br/>
+<br/>
+In Java muss man Variablen <?php $highlight->important('deklarieren'); ?> bevor man sie nutzen kann.<br/>
+Dies geschieht indem man zuerst den Typ nennt von dem der Wert sein darf der in ihr gespeichert werden soll,<br/>
+Denn anders als in der Mathematik kann man hier nicht nur Zahlen als Werte setzen, sondern auch Texte, nur ganze Zahlen usw...<br/>
+<?php $highlight->type('float'); ?> ist eine Zahl mit Nachkommastellen.<br/>
+Das <?php $highlight->constant('f'); ?> muss man hinter die Zahl schreiben, damit das Programm erkennt, dass man eine Zahl vom Typ <?php $highlight->type('float'); ?> meint.
+Es gibt auch noch andere Typen von Zahlen, aber dazu kommen wir später.<br/>
+Hinter jedem Befehl muss auserdem ein Semikolon (;) stehen.<br/>
+<br/>
+In PHP muss man keine Variable deklarieren, sie wird "erstellt" sobald man ihr das erste mal
+einen Wert zuweist.<br/>
+Man muss auch keinen Typ angeben, man kann in jeder Variable alles speichern.<br/>
+Dafür benötigt man aber ein Dallar ($) vor jedem Variablennamen.<br/>
+<br/>
+
+Dies sind nur Ausschnitte von Programmen, welche so nicht laufen würden.<br/>
+Hier die ganzen Programme:
+
+<div class="multi-code-box">
+	<div class="code-box-head clearfix">
+	</div>
+	<div class="code-box-body">
+		<div class="code-container" data-language="java">
+			class Programm
+			{
+				public static void main(String[] parameters)
+				{
+					// Unser code, der Rest muss erstmal nicht verstanden werden
+					float x = 5.5f;
+					float y = x;
+					x = 10f;
+
+					// Müsste x: 10 und y: 5.5 ausgeben
+					System.out.println("x: " + x);
+					System.out.println("y: " + y);
+				}
+			}
+		</div>
+		<div class="code-container" data-language="php">
+			&lsaquo;?php
+
+			// Unser code, der Rest muss erstmal nicht verstanden werden
+			$x = 5.5;
+			$y = $x;
+			$x = 10;
+
+			// Müsste x: 10 und y: 5.5 ausgeben
+			echo 'x: ' . $x;
+			echo 'y: ' . $y;
+		</div>
+	</div>
+</div>
+
+
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<h3>Variablen erstellen</h3>
+<div>
+	Was sind Variablen?
+	Ganz einfach, eine Variable ist wie ein "Behälter" für einen Wert.
+	Das Gegenteil einer Variable ist eine Konstante.<br/>
+	(Variable == variabel/veränderbar, Konstante == konstant/unveränderbar)<br/>
+	<br/>
+	In der folgenden Code-Box sind alle Variablen <span style="color: orange;">orange</span>
+	eingefärbt und alle Konstanten <span style="color: #65B6CE;">blau</span>.
+</div>
+<div class="single-code-box">
+	<div class="code-container" data-language="math">
+		x = 5
+		y = 2 * x + 5
+	</div>
+</div>
+<div>
+	So würde eine Formel mit Variablen und Konstanten in der Mathematik aussehen.<br/>
+	Würde man die Formel in Zeile 2 ausrechnen, wäre der Wert von y 15.<br/>
+	Man könnte aber auch x = 5 durch x = 10 ersetzen, dann würde für y 25<br/>
+	rauskommen, ohne dass man die Formel selbst verändert hat.<br/>
+	<br/>
+	<br/>
+	So werden Variablen in der Mathematik definiert. Der Bezeichner der Variable,
+	dann ein "=" und dann der Wert.
+	<br/>
+	Und so macht man das in verschiedenen Programmiersprachen:
+</div>
+<div class="multi-code-box">
+	<div class="code-box-head clearfix">
+	</div>
+	<div class="code-box-body">
+		<div class="code-container" data-language="java">
+			String s = "Hello World!";
+			int i = 3;
+			float f = 3.5f;
+			boolean b = true;
+			Object o = new Object();
+			String[] a = new String[3];
+		</div>
+		<div class="code-container" data-language="c#">
+			string s = "Hello World!";
+			int i = 3;
+			float f = 3.5f;
+			bool b = true;
+			object o = new object();
+			string[] a = new string[3];
+		</div>
+		<div class="code-container" data-language="php">
+			$s = 'Hello World!';
+			$i = 3;
+			$f = 3.5;
+			$b = true;
+			$o = new DateTime();
+			$a = [];
+		</div>
+		<div class="code-container" data-language="js">
+			var s = "Hello World!";
+			var i = 3;
+			var f = 3.5;
+			var b = true;
+			var o = {};
+			var a = [];
+		</div>
+		<div class="code-container" data-language="ts">
+			var s: string = "Hello World!";
+			var i: number = 3;
+			var f: number = 3.5;
+			var b: boolean = true;
+			var o: {} = {};
+			var a: string[] = [];
+		</div>
+		<div class="code-container" data-language="sh">
+			s="Hello World!"
+			i=3
+			f=3.5
+			a=()
+		</div>
+		<div class="code-container" data-language="jass">
+			local string s = "Hello World!"
+			local integer i = 3
+			local real f = 3.5
+			local boolean b = true
+			local unit o = GetTriggerUnit()
+			local string array a[3]
+		</div>
+	</div>
+</div>
+<div>
+	Anders als in der Mathematik kann man hier den Variablen als Wert nicht nur Zahlen zuweisen,
+	sondern auch Texte, Wahrheitswerte (Wahr/true und Unwahr/false), Objekte oder Listen.
+	<br/>
+	Bei Manchen Sprachen muss man mit "var" oder "$" erst darauf hinweisen, dass
+	man eine neue Variable definieren will, bei manchen muss man angeben welche Arten von Werten
+	denn genau in der Variable gespeichert werden dürfen
+	und bei manchen muss man beides angeben.<br/>
+	<br/>
+	Oft kann man auch Variablen erzeugen ohne einen Wert zu setzen.
+	Die Variable ist dann leer oder hat einen standard Wert.
+</div>
+<div class="multi-code-box">
+	<div class="code-box-head clearfix">
+	</div>
+	<div class="code-box-body">
+		<div class="code-container" data-language="java">
+			String s;
+		</div>
+		<div class="code-container" data-language="c#">
+			string s;
+		</div>
+		<div class="code-container" data-language="php">
+			$s;
+		</div>
+		<div class="code-container" data-language="js">
+			var s;
+		</div>
+		<div class="code-container" data-language="ts">
+			var s: string;
+		</div>
+		<div class="code-container" data-language="jass">
+			local string s
+		</div>
+	</div>
+</div>
+<h3>Variablen auslesen</h3>
+<div>
+	Wir können jetzt zwar (vielleicht) Variablen erstellen, aber noch nicht benutzen.
+	Es wäre ja sinnlos wenn wir Werte nur in den "Behältern" versenken könnten aber
+	sie nie wieder auslesen können.<br/>
+	VORSICHT: Auslesen heist nur Auslesen, nicht herausholen, die Variable selbst wird
+	hier erstmal nicht verändert.<br/>
+	<br/>
+	In den meisten Sprachen oder Entwicklungsumgebungen für Sprachen gibt es eine Art standard Ausgabe.
+	Diese werde ich im nächsten Beispiel nutzen.<br/>
+	Dabei wird der Inhalt meistens irgendwo auf dem Bildschirm ausgegeben (z.B. Konsole, Popup im Browser, ...).
+	Wie das funktioniert ist erstmal egal.
+	<br/>
+</div>
+<div class="multi-code-box">
+	<div class="code-box-head clearfix">
+	</div>
+	<div class="code-box-body">
+		<div class="code-container" data-language="java">
+			String s = "Hello World!";
+			System.out.println(s);
+		</div>
+		<div class="code-container" data-language="c#">
+			string s = "Hello World!";
+			Console.WriteLine(s);
+		</div>
+		<div class="code-container" data-language="php">
+			$s = 'Hello World!';
+			echo $s;
+		</div>
+		<div class="code-container" data-language="js">
+			var s = "Hello World!";
+			alert(s);
+		</div>
+		<div class="code-container" data-language="ts">
+			var s: string = "Hello World!";
+			alert(s);
+		</div>
+		<div class="code-container" data-language="sh">
+			s="Hello World!"
+			echo $s;
+		</div>
+		<div class="code-container" data-language="jass">
+			local string s = "Hello World!"
+			call BJDebugMsg(s)
+		</div>
+	</div>
+</div>
+<h3>Variablen setzen</h3>
+<div>
+	Variablen würden nicht Variablen heisen wenn man sie nur einmal setzen
+	und dann nie wieder verändern könnte.
+	Ein der Wert welcher einmal gesetzt (oder auch nicht gesetzt) wurde kann
+	wieder mit einem anderen Wert überschrieben werden.
+</div>
+<div class="multi-code-box">
+	<div class="code-box-head clearfix">
+	</div>
+	<div class="code-box-body">
+		<div class="code-container" data-language="java">
+			String s = "Hello World!";
+			s = "foo bar";
+		</div>
+		<div class="code-container" data-language="c#">
+			string s = "Hello World!";
+			s = "foo bar";
+		</div>
+		<div class="code-container" data-language="php">
+			$s = 'Hello World!';
+			$s = 'foo bar';
+		</div>
+		<div class="code-container" data-language="js">
+			var s = "Hello World!";
+			s = "foo bar";
+		</div>
+		<div class="code-container" data-language="ts">
+			var s: string = "Hello World!";
+			s = "foo bar";
+		</div>
+		<div class="code-container" data-language="sh">
+			s="Hello World!"
+			s="foo bar"
+		</div>
+		<div class="code-container" data-language="jass">
+			local string s = "Hello World!"
+			set s = "foo bar"
+		</div>
+	</div>
+</div>
+<div>
+	Man kann auch den Wert einer Variable auslesen WÄHREND man ihn gerade überschreibt,
+	da er zu diesen Zeitpunkt noch nicht überschrieben wurde.
+	Dadurch kann man den Wert einer Variable (wenn es eine Zahl ist) um 1 erhöhen indem
+	man den Wert ausliest, 1 dazu zählt und ihn dann setzt.
+</div>
+<div class="multi-code-box">
+	<div class="code-box-head clearfix">
+	</div>
+	<div class="code-box-body">
+		<div class="code-container" data-language="java">
+			String s = "a";
+			s = s + "b";
+
+			int i = 3;
+			i = i + 1;
+		</div>
+		<div class="code-container" data-language="c#">
+			string s = "a";
+			s = s + "b";
+
+			int i = 3;
+			i = i + 1;
+		</div>
+		<div class="code-container" data-language="php">
+			$s = 'a';
+			$s = $s . 'b';
+
+			$i = 3;
+			$i = $i + 1;
+		</div>
+		<div class="code-container" data-language="js">
+			var s = "a";
+			s = s + "b";
+
+			var i = 3;
+			i = i + 1;
+		</div>
+		<div class="code-container" data-language="ts">
+			var s: string = "a";
+			s = s + "b";
+
+			var i: number = 3;
+			i = i + 1;
+		</div>
+		<div class="code-container" data-language="sh">
+			s="a"
+			s="$ab"
+		</div>
+		<div class="code-container" data-language="jass">
+			local string s = "a"
+			local integer i = 3
+
+			set s = s + "b"
+			set i = i + 1
+		</div>
+	</div>
+</div>

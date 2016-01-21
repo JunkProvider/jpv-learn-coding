@@ -15,11 +15,13 @@ html {
 
 body {
 	min-height: 2000px;
-	width: 1200px;
+	width: 1000px;
 	margin: auto;
 	padding: 10px 40px 10px 40px;
 	background-color: #303030;
 }
+
+.color-variable { color: #FFA500; }
 
 .page-head
 {
@@ -132,7 +134,6 @@ h3 {
 .menu
 {
 	position: relative;
-	margin-bottom: 100px;
 	font-size: 20px;
 	font-weight: bold;
 	color: #8DB553;
@@ -145,10 +146,13 @@ h3 {
 
 .menu-item-button 
 {
+	display: block;
 	padding: 4px;
 	border: 1px solid grey;
 	background-color: #393939;
+	color: #8DB553;
 	cursor: pointer;
+	text-decoration: none;
 }
 
 .menu-item-button:hover
