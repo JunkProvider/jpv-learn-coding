@@ -21,6 +21,11 @@ body {
 	background-color: #303030;
 }
 
+.page-head
+{
+	_background-color: black;
+}
+
 h1 {
 	text-align: center;
 	margin-bottom: 48px;
@@ -100,22 +105,26 @@ h3 {
 
 }
 
-.code-container-left {
+.code-container-left
+{
 	float: left;
 	/*padding: 0px 5px 0px 0px;
 	margin: 0px 5px 0px 0px;
 	border-right: 1px solid grey;*/
 }
 
-.code-container-right {
+.code-container-right
+{
 	float: left;
 }
 
-.code-container .segment:hover {
+.code-container .segment:hover
+{
 	background-color: #414141;
 }
 
-.tab {
+.tab
+{
 	display: inline-block;
 	width: 32px;
 }
@@ -123,6 +132,7 @@ h3 {
 .menu
 {
 	position: relative;
+	margin-bottom: 100px;
 	font-size: 20px;
 	font-weight: bold;
 	color: #8DB553;
@@ -130,30 +140,41 @@ h3 {
 
 .menu-item
 {
-	width: 250px;
+	
+}
+
+.menu-item-button 
+{
+	padding: 4px;
 	border: 1px solid grey;
+	background-color: #393939;
+	cursor: pointer;
+}
+
+.menu-item-button:hover
+{
+	background-color: #414141;
 }
 
 .menu > .menu-item
 {
 	position: relative;
 	float: left;
+	width: 25%;
 }
 
-.sub-menu
+.menu-item-children
 {
 	display: none;
 	position: absolute;
+	width: 100%;
 	left: 0px;
 	top: 100%;
+	font-size: 18px;
+	color: #D3d3D3;
 }
 
-.menu-item:hover .sub-menu
+.menu-item:hover .menu-item-children
 {
 	display: block;
-}
-
-.sub-menu > .menu-item
-{
-	
 }
